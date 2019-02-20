@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "env-cmd .env npm start",
+    "heroku:init": "heroku git:remote -a crumb-master",
+    "publish": "git push heroku master",
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
