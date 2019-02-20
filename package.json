@@ -1,0 +1,28 @@
+{
+  "name": "crumb-master",
+  "version": "1.0.0",
+  "description": "agile planning poker",
+  "main": "index.js",
+  "scripts": {
+    "dev": "env-cmd .env npm start",
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/swcolegrove/crumb-master.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/swcolegrove/crumb-master/issues"
+  },
+  "homepage": "https://github.com/swcolegrove/crumb-master#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "env-cmd": "^8.0.2"
+  }
+}
