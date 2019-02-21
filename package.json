@@ -13,8 +13,8 @@
     "express:run": "vue-cli-service express:run",
     "heroku:init": "heroku git:remote -a crumb-master",
     "publish": "git push heroku master",
-    "start": "npm run express:run",
-    "heroku-postbuild": "echo Skip build on Heroku"
+    "start": "vue-cli-service express:run",
+    "heroku-postbuild": "vue-cli-service build"
   },
   "dependencies": {
     "bluebird": "^3.5.3",
@@ -67,6 +67,5 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/swcolegrove/crumb-master.git"
-  },
-  "heroku-run-build-script": true
+  }
 }
