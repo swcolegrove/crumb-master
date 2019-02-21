@@ -13,7 +13,7 @@
     "express:run": "vue-cli-service express:run",
     "heroku:init": "heroku git:remote -a crumb-master",
     "publish": "git push heroku master",
-    "start": "npm run express:run"
+    "start": "npm run build; npm run express:run"
   },
   "dependencies": {
     "bluebird": "^3.5.3",
