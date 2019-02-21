@@ -2,29 +2,69 @@
   "name": "crumb-master",
   "version": "1.0.0",
   "description": "agile planning poker",
-  "main": "index.js",
+  "author": "",
   "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "vue-cli-service lint",
     "dev": "env-cmd .env npm start",
+    "express": "vue-cli-service express:watch",
+    "express:run": "vue-cli-service express:run",
     "heroku:init": "heroku git:remote -a crumb-master",
     "publish": "git push heroku master",
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npm run express:run"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/swcolegrove/crumb-master.git"
+  "dependencies": {
+    "bluebird": "^3.5.3",
+    "express": "^4.16.4",
+    "redis": "^2.8.0",
+    "socket.io": "^2.2.0",
+    "socket.io-client": "^2.2.0",
+    "vue": "^2.6.6"
   },
-  "author": "",
-  "license": "ISC",
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.4.0",
+    "@vue/cli-plugin-eslint": "^3.4.0",
+    "@vue/cli-service": "^3.4.0",
+    "babel-eslint": "^10.0.1",
+    "env-cmd": "^8.0.2",
+    "eslint": "^5.14.1",
+    "eslint-plugin-vue": "^5.0.0",
+    "vue-cli-plugin-express": "^1.0.0",
+    "vue-template-compiler": "^2.5.21"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "rules": {},
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ],
   "bugs": {
     "url": "https://github.com/swcolegrove/crumb-master/issues"
   },
   "homepage": "https://github.com/swcolegrove/crumb-master#readme",
-  "dependencies": {
-    "express": "^4.16.4",
-    "socket.io": "^2.2.0"
-  },
-  "devDependencies": {
-    "env-cmd": "^8.0.2"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/swcolegrove/crumb-master.git"
   }
 }
