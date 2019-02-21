@@ -74,25 +74,41 @@
     <h1>Crumb Master</h1>
   </header>
 
-  <ul id="messages"></ul>
-  <form action="">
-    <input id="m" autocomplete="off" /><button>Send</button>
-  </form>
+  <div id="app">
+    <ul id="messages">
+      <li v-for="message in messages">
+        {{ message }}
+      </li>
+    </ul>
+    <form action="" v-on:submit.prevent="chatSubmit">
+      <input id="m" autocomplete="off" v-model="typingText" /><button>Send</button>
+    </form>
+  </div>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script>
-    $(() => {
-      const socket = io();
-      $('form').submit((e) => {
-        e.preventDefault(); // prevents page reloading
-        socket.emit('chat message', $('#m').val());
-        $('#m').val('');
-        return false;
-      });
-      socket.on('chat message', (msg) => {
-        $('#messages').append($('<li>').text(msg));
-      });
+    const socket = io();
+    const app = new Vue({
+      el: '#app',
+      data: {
+        typingText: '',
+        messages: []
+      },
+      methods: {
+        chatSubmit: function(args) {
+          socket.emit('chat message', this.typingText);
+          this.typingText = '';
+        },
+        incomingMessage: function(msg) {
+          this.messages.push(msg);
+        },
+      },
+      mounted: function() {
+        socket.on('chat message', (msg) => {
+          this.incomingMessage(msg);
+        });
+      }
     });
   </script>
 </body>
