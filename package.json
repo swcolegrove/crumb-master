@@ -22,12 +22,12 @@
     "redis": "^2.8.0",
     "socket.io": "^2.2.0",
     "socket.io-client": "^2.2.0",
-    "vue": "^2.6.6"
+    "vue": "^2.6.6",
+    "@vue/cli-service": "^3.4.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.4.0",
     "@vue/cli-plugin-eslint": "^3.4.0",
-    "@vue/cli-service": "^3.4.0",
     "babel-eslint": "^10.0.1",
     "env-cmd": "^8.0.2",
     "eslint": "^5.14.1",
