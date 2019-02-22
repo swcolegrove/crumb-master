@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import io from "socket.io-client";
 const socket = io();
 
@@ -29,14 +30,23 @@ export default {
   },
   methods: {
     chatSubmit: function() {
-      socket.emit('chat message', this.typingText);
-      this.typingText = '';
+      const message = this.typingText;
+      axios.post('/sendMessage', { message } ).then(() => {
+        socket.emit('chat message', message);
+        this.typingText = '';
+      });
     },
     incomingMessage: function(msg) {
       this.messages.push(msg);
     },
+    getMessages() {
+      axios.get('/messages').then((response) => {
+        this.messages = response.data;
+      });
+    },
   },
   mounted() {
+    this.getMessages();
     socket.on('chat message', (msg) => {
       this.incomingMessage(msg);
     });
