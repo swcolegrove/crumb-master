@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" :class="getUiTheme()">
     <header>
       <h1>Crumb Master</h1>
     </header>
@@ -25,7 +25,8 @@ export default {
   data() {
     return {
       typingText: '',
-      messages: []
+      messages: [],
+      themeColor: 'dark',
     };
   },
   methods: {
@@ -35,6 +36,9 @@ export default {
         socket.emit('chat message', message);
         this.typingText = '';
       });
+    },
+    getUiTheme() {
+      return this.themeColor;
     },
     incomingMessage: function(msg) {
       this.messages.push(msg);
@@ -54,34 +58,49 @@ export default {
 }
 </script>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+<style lang="scss">
+  $ui-theme-primary: #0C0C0D;
+  $ui-theme-secondary: #323234;
+  $ui-theme-thirdary: #474749;
 
-<style>
   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
   }
 
-  body {
-    font: 16px Helvetica, Arial;
+  html,
+  body,
+  #app {
+    height: 100%;
+  }
+
+  #app {
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #2c3e50;
+
+    &.dark {
+      background-color: $ui-theme-secondary;
+      color: #fff;
+
+      header {
+        background-color: $ui-theme-primary;
+      }
+    }
+
+    &.light {
+
+    }
   }
 
   header {
-    padding: 20px;
+    padding: 10px;
   }
 
   form {
-    background: #000;
+    /* background: #000; */
     padding: 3px;
     position: fixed;
     bottom: 0;
@@ -113,6 +132,6 @@ export default {
   }
 
   #messages li:nth-child(odd) {
-    background: #eee;
+    background-color: $ui-theme-thirdary;
   }
 </style>
