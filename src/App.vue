@@ -3,8 +3,8 @@
     <header>
       <h1>Crumb Master</h1>
       <toggle
-        v-model="isDark"
-        :checked="isDark"
+        v-model="isSpooky"
+        :checked="isSpooky"
         label="Spooky Mode"
         >
       </toggle>
@@ -24,7 +24,8 @@
 <script>
 import Toggle from './components/Toggle.vue'
 import axios from 'axios';
-import io from "socket.io-client";
+import io from 'socket.io-client';
+import { isUndefined, toBoolean } from '../utils.js';
 const socket = io();
 
 export default {
@@ -36,11 +37,11 @@ export default {
     return {
       typingText: '',
       messages: [],
-      isDark: true,
+      isSpooky: true,
     };
   },
   methods: {
-    chatSubmit: function() {
+    chatSubmit() {
       const message = this.typingText;
       axios.post('/sendMessage', { message } ).then(() => {
         socket.emit('chat message', message);
@@ -48,9 +49,9 @@ export default {
       });
     },
     getUiTheme() {
-      return this.isDark ? 'dark' : 'light';
+      return this.isSpooky ? 'dark' : 'light';
     },
-    incomingMessage: function(msg) {
+    incomingMessage(msg) {
       this.messages.push(msg);
     },
     getMessages() {
@@ -58,13 +59,26 @@ export default {
         this.messages = response.data;
       });
     },
+    getSpooky() {
+      if (!isUndefined(localStorage.isSpooky)) {
+        this.isSpooky = toBoolean(localStorage.isSpooky);
+      } else {
+        localStorage.isSpooky = this.isSpooky;
+      }
+    },
   },
   mounted() {
+    this.getSpooky();
     this.getMessages();
     socket.on('chat message', (msg) => {
       this.incomingMessage(msg);
     });
   },
+  watch: {
+    isSpooky: (newVal) => {
+      localStorage.isSpooky = newVal;
+    },
+  }
 }
 </script>
 

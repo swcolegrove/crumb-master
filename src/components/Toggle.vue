@@ -32,10 +32,6 @@ export default {
     align-items: center;
   }
 
-  .toggle-label {
-
-  }
-
   label {
     position: relative;
     display: inline-block;
