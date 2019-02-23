@@ -2,6 +2,12 @@
   <div id="app" :class="getUiTheme()">
     <header>
       <h1>Crumb Master</h1>
+      <toggle
+        v-model="isDark"
+        :checked="isDark"
+        label="Spooky Mode"
+        >
+      </toggle>
     </header>
 
     <ul id="messages">
@@ -16,17 +22,21 @@
 </template>
 
 <script>
+import Toggle from './components/Toggle.vue'
 import axios from 'axios';
 import io from "socket.io-client";
 const socket = io();
 
 export default {
   name: 'app',
+  components: {
+    toggle: Toggle,
+  },
   data() {
     return {
       typingText: '',
       messages: [],
-      themeColor: 'dark',
+      isDark: true,
     };
   },
   methods: {
@@ -38,7 +48,7 @@ export default {
       });
     },
     getUiTheme() {
-      return this.themeColor;
+      return this.isDark ? 'dark' : 'light';
     },
     incomingMessage: function(msg) {
       this.messages.push(msg);
@@ -59,48 +69,31 @@ export default {
 </script>
 
 <style lang="scss">
-  $ui-theme-primary: #0C0C0D;
-  $ui-theme-secondary: #323234;
-  $ui-theme-thirdary: #474749;
-
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-  html,
-  body,
-  #app {
-    height: 100%;
-  }
+  @import "./styles/index.scss";
 
   #app {
-    font-family: 'Avenir', Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    color: #2c3e50;
-
     &.dark {
-      background-color: $ui-theme-secondary;
-      color: #fff;
+      background-color: $dark-theme-bg-secondary;
+      color: $dark-theme-text-color;
 
       header {
-        background-color: $ui-theme-primary;
+        background-color: $dark-theme-bg-primary;
       }
     }
 
     &.light {
+      background-color: $light-theme-bg-secondary;
+      color: $light-theme-text-color;
 
+      header {
+        background-color: $light-theme-bg-primary;
+      }
     }
   }
 
-  header {
-    padding: 10px;
-  }
 
+  //TODO: Remove this
   form {
-    /* background: #000; */
     padding: 3px;
     position: fixed;
     bottom: 0;
@@ -132,6 +125,6 @@ export default {
   }
 
   #messages li:nth-child(odd) {
-    background-color: $ui-theme-thirdary;
+    background-color: $dark-theme-bg-thirdary;
   }
 </style>
