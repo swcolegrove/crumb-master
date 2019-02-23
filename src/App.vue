@@ -10,6 +10,15 @@
       </toggle>
     </header>
 
+    <div class="wrapper">
+      <div class="row">
+        <div class="col-12">
+          <input type="text" placeholder="Name"/>
+          <button>Set name</button>
+        </div>
+      </div>
+    </div>
+
     <ul id="messages">
       <li v-for="(message, messageKey) in messages" :key="messageKey">
         {{ message }}
@@ -60,10 +69,11 @@ export default {
       });
     },
     getSpooky() {
-      if (!isUndefined(localStorage.isSpooky)) {
-        this.isSpooky = toBoolean(localStorage.isSpooky);
+      const localSpooky = localStorage.getItem('isSpooky');
+      if (!isUndefined(localSpooky)) {
+        this.isSpooky = toBoolean(localSpooky);
       } else {
-        localStorage.isSpooky = this.isSpooky;
+        localStorage.setItem('isSpooky', this.isSpooky);
       }
     },
   },
@@ -103,6 +113,10 @@ export default {
         background-color: $light-theme-bg-primary;
       }
     }
+  }
+
+  .wrapper {
+    padding: 2rem;
   }
 
 
