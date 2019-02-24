@@ -150,8 +150,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$pad-unit: 8px;
-
 .room-info,
 .player-info,
 .story-info,

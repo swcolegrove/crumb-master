@@ -1,25 +1,25 @@
 <template>
   <main>
     <div v-if="!isSet">
-      Enter your username:
+      <span class="dat-space">Enter your username:</span>
       <div class="row">
         <div class="col-12">
-          <input type="text" v-model="username">
-          <button class="glow" @click="setName">Set name</button>
+          <input class="dat-space" type="text" v-model="username">
+          <button class="glow dat-space" @click="setName">Set name</button>
         </div>
       </div>
     </div>
     <div v-else >
-      Create or join a room
+      <span class="dat-space">Create or join a room</span>
       <div class="row">
         <div class="col-12">
-          <button class="glow" @click="createRoom">Create room</button>
+          <button class="glow dat-space" @click="createRoom">Create room</button>
         </div>
       </div>
       <div class="row">
         <div class="col-12">
-          <input type="text" v-model="roomName">
-          <button class="glow">Join room</button>
+          <input class="dat-space" type="text" v-model="roomName">
+          <button class="glow dat-space">Join room</button>
         </div>
       </div>
     </div>
@@ -65,5 +65,9 @@ export default {
 <style lang="scss" scoped>
   main {
     padding: 2rem;
+  }
+
+  .dat-space {
+    margin: $pad-unit;
   }
 </style>
