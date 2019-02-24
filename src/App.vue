@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import Toggle from './components/Toggle.vue'
+import Toggle from './components/Toggle.vue';
 import axios from 'axios';
 import io from 'socket.io-client';
 import { isUndefined, toBoolean } from '../utils.js';
