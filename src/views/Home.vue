@@ -47,7 +47,7 @@ export default {
     },
     createRoom() {
       const name = this.getUsername();
-      axios.post('/create-room', { name } ).then((response) => {
+      axios.post('/join-room', { name } ).then((response) => {
         const roomId = response.data.roomId;
         this.$router.push({ path: `/room/${roomId}` });
       });

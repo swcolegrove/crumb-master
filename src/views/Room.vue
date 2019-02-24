@@ -12,6 +12,7 @@
       <button class="glow" @click="clearVotes">Clear Votes</button>
       <button class="fill" @click="toggleShowVotes()">Show Votes</button>
       <button class="diagonal" @click="makeMeCrumbMaster">I am the Crumb Master!</button>
+      <button class="diagonal" @click="destroy">Destroy Everything</button>
     </div>
     <div class="story-clock">
       Time: 00:12:34
@@ -36,6 +37,7 @@
 <script>
 import UserSession from '../mixins/UserSession.js';
 import VoteList from '../components/VoteList.vue';
+import axios from 'axios';
 
 export default {
   name: 'Room',
@@ -112,6 +114,7 @@ export default {
     };
   },
   beforeMount() {
+    this.getRoomData();
     // Get the initial data and set up the handlers
   },
   computed: {
@@ -145,6 +148,21 @@ export default {
     toggleShowVotes() {
       this.showVotes = !this.showVotes;
     },
+    getRoomData() {
+      axios.get(`room-data/${this.roomId}`).then(response => {
+        const roomData = response.data;
+        const name = this.getUsername();
+        const roomId = this.roomId;
+        if (!roomData[name]) {
+          axios.post('/join-room', { name, roomId } ).then((response) => {
+            console.log('Room joined');
+          });
+        }
+      });
+    },
+    destroy() {
+      axios.post('/destroy');
+    }
   },
 }
 </script>
