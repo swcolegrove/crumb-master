@@ -9,9 +9,9 @@
       </label>
     </div>
     <div class="vote-controls">
-      <button @click="clearVotes">Clear Votes</button>
-      <button @click="toggleShowVotes()">Show Votes</button>
-      <button @click="makeMeCrumbMaster">I am the Crumb Master!</button>
+      <button class="glow" @click="clearVotes">Clear Votes</button>
+      <button class="fill" @click="toggleShowVotes()">Show Votes</button>
+      <button class="diagonal" @click="makeMeCrumbMaster">I am the Crumb Master!</button>
     </div>
     <div class="story-clock">
       Time: 00:12:34
@@ -164,7 +164,7 @@ $pad-unit: 8px;
   padding-right: 0;
   padding-bottom: 0;
   width: 50%;
-  
+
   .btn-vote {
     display: inline-block;
     margin-right: $pad-unit;
