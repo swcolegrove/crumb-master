@@ -82,7 +82,6 @@ export default {
 
   form button {
     width: 9%;
-    background: rgb(130, 224, 255);
     border: none;
     padding: 10px;
   }

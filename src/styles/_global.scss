@@ -19,6 +19,12 @@ header {
   justify-content: space-between;
 }
 
+main {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
 input,
 select {
   height: 2rem;
