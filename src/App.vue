@@ -10,32 +10,13 @@
       </toggle>
     </header>
 
-    <div class="wrapper">
-      <div class="row">
-        <div class="col-12">
-          <input type="text" placeholder="Name"/>
-          <button>Set name</button>
-        </div>
-      </div>
-    </div>
-
-    <ul id="messages">
-      <li v-for="(message, messageKey) in messages" :key="messageKey">
-        {{ message }}
-      </li>
-    </ul>
-    <form action="" v-on:submit.prevent="chatSubmit">
-      <input id="m" autocomplete="off" v-model="typingText" /><button>Send</button>
-    </form>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
 import Toggle from './components/Toggle.vue';
-import axios from 'axios';
-import io from 'socket.io-client';
 import { isUndefined, toBoolean } from '../utils.js';
-const socket = io();
 
 export default {
   name: 'app',
@@ -44,29 +25,12 @@ export default {
   },
   data() {
     return {
-      typingText: '',
-      messages: [],
       isSpooky: true,
     };
   },
   methods: {
-    chatSubmit() {
-      const message = this.typingText;
-      axios.post('/sendMessage', { message } ).then(() => {
-        socket.emit('chat message', message);
-        this.typingText = '';
-      });
-    },
     getUiTheme() {
       return this.isSpooky ? 'dark' : 'light';
-    },
-    incomingMessage(msg) {
-      this.messages.push(msg);
-    },
-    getMessages() {
-      axios.get('/messages').then((response) => {
-        this.messages = response.data;
-      });
     },
     getSpooky() {
       const localSpooky = localStorage.getItem('isSpooky');
@@ -79,10 +43,6 @@ export default {
   },
   mounted() {
     this.getSpooky();
-    this.getMessages();
-    socket.on('chat message', (msg) => {
-      this.incomingMessage(msg);
-    });
   },
   watch: {
     isSpooky: (newVal) => {
@@ -113,46 +73,5 @@ export default {
         background-color: $light-theme-bg-primary;
       }
     }
-  }
-
-  .wrapper {
-    padding: 2rem;
-  }
-
-
-  //TODO: Remove this
-  form {
-    padding: 3px;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-  }
-
-  form input {
-    border: 0;
-    padding: 10px;
-    width: 90%;
-    margin-right: .5%;
-  }
-
-  form button {
-    width: 9%;
-    background: rgb(130, 224, 255);
-    border: none;
-    padding: 10px;
-  }
-
-  #messages {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  #messages li {
-    padding: 5px 10px;
-  }
-
-  #messages li:nth-child(odd) {
-    background-color: $dark-theme-bg-thirdary;
   }
 </style>
