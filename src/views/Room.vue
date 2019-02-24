@@ -60,7 +60,7 @@ export default {
           value: 0,
         },
         {
-          text: '1/2 point',
+          text: '½ point',
           value: 0.5,
         },
         {
@@ -163,6 +163,7 @@ $pad-unit: 8px;
 .vote-options {
   padding-right: 0;
   padding-bottom: 0;
+  width: 50%;
   
   .btn-vote {
     display: inline-block;
