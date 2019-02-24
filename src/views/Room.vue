@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import UserSession from '../mixins/UserSession.js';
 import VoteList from '../components/VoteList.vue';
 
 export default {
@@ -41,6 +42,7 @@ export default {
   components: {
     'vote-list': VoteList,
   },
+  mixins: [UserSession],
   data() {
     return {
       isCrumbMaster: false,

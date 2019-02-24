@@ -1,103 +1,69 @@
 <template>
   <main>
-    <div class="wrapper">
+    <div v-if="!isSet">
+      Enter your username:
       <div class="row">
         <div class="col-12">
-          <input type="text" placeholder="Name"/>
-          <button>Set name</button>
+          <input type="text" v-model="username">
+          <button class="glow" @click="setName">Set name</button>
         </div>
       </div>
     </div>
-
-    <ul id="messages">
-      <li v-for="(message, messageKey) in messages" :key="messageKey">
-        {{ message }}
-      </li>
-    </ul>
-    <form action="" v-on:submit.prevent="chatSubmit">
-      <input id="m" autocomplete="off" v-model="typingText" /><button>Send</button>
-    </form>
+    <div v-else >
+      Create or join a room
+      <div class="row">
+        <div class="col-12">
+          <button class="glow" @click="createRoom">Create room</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <input type="text" v-model="roomName">
+          <button class="glow">Join room</button>
+        </div>
+      </div>
+    </div>
   </main>
 </template>
 
 <script>
+import UserSession from '../mixins/UserSession.js';
 import axios from 'axios';
-import io from 'socket.io-client';
-
-const socket = io();
 
 export default {
   name: 'Home',
+  mixins: [UserSession],
   data() {
     return {
-      typingText: '',
-      messages: [],
+      username: '',
+      isSet: false,
+      roomName: '',
     };
   },
   methods: {
-    chatSubmit() {
-      const message = this.typingText;
-      axios.post('/sendMessage', { message } ).then(() => {
-        socket.emit('chat message', message);
-        this.typingText = '';
-      });
+    setName() {
+      this.setUsername(this.username);
+      this.isSet = true;
     },
-    getMessages() {
-      axios.get('/messages').then((response) => {
-        this.messages = response.data;
+    createRoom() {
+      const name = this.getUsername();
+      axios.post('/create-room', { name } ).then((response) => {
+        const roomId = response.data.roomId;
+        this.$router.push({ path: `/room/${roomId}` });
       });
-    },
-    incomingMessage(msg) {
-      this.messages.push(msg);
     },
   },
   mounted() {
-    this.getMessages();
-    socket.on('chat message', (msg) => {
-      this.incomingMessage(msg);
-    });
+    const name = this.getUsername();
+    if (name) {
+      this.isSet = true;
+    }
   },
 }
 </script>
 
-<style lang="scss">
-  .wrapper {
+<style lang="scss" scoped>
+  main {
     padding: 2rem;
-  }
-
-  //TODO: Remove this
-  form {
-    padding: 3px;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-  }
-
-  form input {
-    border: 0;
-    padding: 10px;
-    width: 90%;
-    margin-right: .5%;
-  }
-
-  form button {
-    width: 9%;
-    border: none;
-    padding: 10px;
-  }
-
-  #messages {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  #messages li {
-    padding: 5px 10px;
-  }
-
-  #messages li:nth-child(odd) {
-    background-color: $dark-theme-bg-thirdary;
-    color: $light-theme-text-inverse;
   }
 </style>
