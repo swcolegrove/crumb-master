@@ -25,7 +25,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import "./styles/index.scss";
   .toggle-wrapper {
     display: flex;
     flex-direction: column;
