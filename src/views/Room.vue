@@ -12,7 +12,6 @@
       <button class="glow" @click="clearVotes">Clear Votes</button>
       <button class="fill" @click="toggleShowVotes()">Show Votes</button>
       <button class="diagonal" @click="makeMeCrumbMaster">I am the Crumb Master!</button>
-      <button class="diagonal" @click="destroy">Destroy Everything</button>
     </div>
     <div class="story-clock">
       Time: 00:12:34
@@ -161,9 +160,6 @@ export default {
         this.setPastRoom(room);
       });
     },
-    destroy() {
-      axios.post('/destroy');
-    }
   },
 }
 </script>
@@ -189,5 +185,9 @@ export default {
     margin-right: $pad-unit;
     margin-bottom: $pad-unit;
   }
+}
+
+.vote-controls button {
+  margin-bottom: $pad-unit;
 }
 </style>

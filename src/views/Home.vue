@@ -29,6 +29,12 @@
           <p v-else>😥 You don't have any rooms yet</p>
         </div>
       </div>
+      <div class="row">
+        <div class="col-12">
+          <h3>Don't forget to remove this</h3>
+          <button class="diagonal" @click="destroy">Wipe Redis</button>
+        </div>
+      </div>
     </div>
   </main>
 </template>
@@ -79,6 +85,9 @@ export default {
           id: splitRoom[1],
         };
       });
+    },
+    destroy() {
+      axios.post('/destroy');
     }
   },
   mounted() {
@@ -112,5 +121,9 @@ export default {
       color: red;
       cursor: pointer;
     }
+  }
+
+  .row {
+    margin-bottom: 1rem;
   }
 </style>

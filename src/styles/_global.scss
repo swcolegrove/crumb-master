@@ -32,10 +32,15 @@ textarea {
   border: 1px solid $black;
 }
 
-input {
+input,
+textarea {
   padding-left: 1rem;
 }
 
 a {
   color: $ui-color-action;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: 1rem;
 }
