@@ -4,7 +4,7 @@ const http = require('http').Server(app);
 const path = require('path');
 const io = require('socket.io')(http);
 const serveStatic = require('serve-static');
-const { connectToClient, addMessage, getMessages, createRoom, getRoom } = require('./lib/redis.js');
+const { connectToClient, addMessage, getMessages, createRoom, getRoom, addVoteToRoom } = require('./lib/redis.js');
 
 app.use(express.json());
 app.use(express.urlencoded());
@@ -68,6 +68,21 @@ connectToClient().then(res => {
     socket.on('chat message', (msg) => {
       consoleMsg(`message: ${msg}`);
       io.emit('chat message', msg);
+    });
+
+    socket.on('room vote', (msg) => {
+      try {
+        const { roomId, userName, value } = JSON.parse(msg);
+        if (roomId && userName && value) {
+          addVoteToRoom({ roomId, userName, value }).then(votes => {
+            io.emit(`room ${roomId}`, votes);
+          });
+        } else {
+          console.log('Required data not present'); // eslint-disable-line
+        }
+      } catch (err) {
+        console.log('Could not parse message', err); // eslint-disable-line
+      }
     });
   });
 });

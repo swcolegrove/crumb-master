@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import io from 'socket.io-client';
 import UserSession from '../mixins/UserSession.js';
 import VoteList from '../components/VoteList.vue';
 
@@ -48,7 +49,7 @@ export default {
       isCrumbMaster: false,
       isSpectator: false,
       playerId: '7',
-      playerName: '¯\\_(ツ)_/¯',
+      playerName: '',
       players: [
         { id: '7', name: 'Name 1' },
         { id: '8', name: 'Name 2' },
@@ -122,12 +123,14 @@ export default {
   methods: {
     castVote(value) {
       if (!this.isSpectator) {
-        const lastVote = this.votes.find(vote => vote.playerId === this.playerId);
-        if (lastVote) {
-          lastVote.value = value;
-        } else {
-          this.votes.push({ playerId: this.playerId, value });
-        }
+        // // Forget this, we want the data from the socket!
+        // const lastVote = this.votes.find(vote => vote.playerId === this.playerId);
+        // if (lastVote) {
+        //   lastVote.value = value;
+        // } else {
+        //   this.votes.push({ playerId: this.playerId, value });
+        // }
+        socket.emit('room vote', { roomId: this.roomId, userName: this.playerName, value });
       }
     },
     clearVotes() {
@@ -145,6 +148,15 @@ export default {
     toggleShowVotes() {
       this.showVotes = !this.showVotes;
     },
+  },
+  mounted() {
+    const name = this.getUsername();
+    this.playerName = name;
+
+    socket.on(`room ${this.roomId}`, (msg) => {
+      // this.incomingMessage(msg);
+      console.log('ROOM DATA', msg); // eslint-disable-line
+    });
   },
 }
 </script>
