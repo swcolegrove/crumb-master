@@ -10,10 +10,13 @@ export default {
   },
   methods: {
     getUsername() {
-      return sessionStorage.getItem('username');
+      return localStorage.getItem('username');
     },
     setUsername(name) {
-      sessionStorage.setItem('username', name);
+      localStorage.setItem('username', name);
     },
+    getPastRooms() {
+      return localStorage.getItem('pastRooms');
+    }
   },
 };

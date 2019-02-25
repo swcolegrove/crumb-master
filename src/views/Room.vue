@@ -149,15 +149,10 @@ export default {
       this.showVotes = !this.showVotes;
     },
     getRoomData() {
-      axios.get(`room-data/${this.roomId}`).then(response => {
-        const roomData = response.data;
-        const name = this.getUsername();
-        const roomId = this.roomId;
-        if (!roomData[name]) {
-          axios.post('/join-room', { name, roomId } ).then((response) => {
-            console.log('Room joined');
-          });
-        }
+      const username = this.getUsername();
+      const roomId = this.roomId;
+      axios.post('/join-room', { username, roomId } ).then((response) => {
+        console.log('Room joined', response.data);
       });
     },
     destroy() {

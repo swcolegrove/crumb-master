@@ -1,11 +1,11 @@
 <template>
   <main>
     <div v-if="!isSet">
-      <span class="dat-space">Enter your username:</span>
+      <span class="dat-space">Enter your username to get started:</span>
       <div class="row">
         <div class="col-12">
           <input class="dat-space" type="text" v-model="username">
-          <button class="glow dat-space" @click="setName">Set name</button>
+          <button class="diagonal dat-space" @click="setName">Set name</button>
         </div>
       </div>
     </div>
@@ -13,13 +13,14 @@
       <span class="dat-space">Create or join a room</span>
       <div class="row">
         <div class="col-12">
-          <button class="glow dat-space" @click="createRoom">Create room</button>
+          <input type="text" placeholder="Room Name" v-model="roomName">
+          <button class="diagonal dat-space" @click="createRoom">Create room</button>
         </div>
       </div>
       <div class="row">
         <div class="col-12">
-          <input class="dat-space" type="text" v-model="roomName">
-          <button class="glow dat-space">Join room</button>
+          Past rooms:
+
         </div>
       </div>
     </div>
@@ -46,8 +47,9 @@ export default {
       this.isSet = true;
     },
     createRoom() {
-      const name = this.getUsername();
-      axios.post('/join-room', { name } ).then((response) => {
+      const roomName = this.roomName;
+      const username = this.getUsername();
+      axios.post('/create-room', { roomName, username } ).then((response) => {
         const roomId = response.data.roomId;
         this.$router.push({ path: `/room/${roomId}` });
       });
