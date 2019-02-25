@@ -16,7 +16,23 @@ export default {
       localStorage.setItem('username', name);
     },
     getPastRooms() {
-      return localStorage.getItem('pastRooms');
+      const pastRooms = localStorage.getItem('pastRooms');
+      return JSON.parse(pastRooms);
+    },
+    setPastRoom(room) {
+      let pastRooms = this.getPastRooms();
+      const currentRoom = `${room.roomData['room-name']}&&&${room.roomId}`;
+      if (pastRooms && pastRooms.length > 0) {
+        if (!pastRooms.includes(currentRoom)) {
+          pastRooms.push(currentRoom);
+          pastRooms = JSON.stringify(pastRooms);
+          localStorage.setItem('pastRooms', pastRooms);
+        }
+      } else {
+        pastRooms = [currentRoom];
+        pastRooms = JSON.stringify(pastRooms);
+        localStorage.setItem('pastRooms', pastRooms);
+      }
     }
   },
 };

@@ -20,7 +20,13 @@
       <div class="row">
         <div class="col-12">
           Past rooms:
-
+          <ul class="past-rooms" v-if="pastRooms && pastRooms.length > 0">
+            <li v-for="(room, roomKey) in pastRooms" :key="roomKey">
+              <router-link :to="`/room/${room.id}`">{{ room.name }}</router-link>
+              <a class="remove-room" @click="removePastRoom(room)" title="Remove"> X </a>
+            </li>
+          </ul>
+          <p v-else>😥 You don't have any rooms yet</p>
         </div>
       </div>
     </div>
@@ -39,6 +45,7 @@ export default {
       username: '',
       isSet: false,
       roomName: '',
+      pastRooms: [],
     };
   },
   methods: {
@@ -54,12 +61,33 @@ export default {
         this.$router.push({ path: `/room/${roomId}` });
       });
     },
+    removePastRoom(room) {
+      let pastRooms = this.getPastRooms();
+      const roomIndex = pastRooms.indexOf(`${room.name}&&&${room.id}`);
+      pastRooms.splice(roomIndex, 1);
+      pastRooms = JSON.stringify(pastRooms);
+      localStorage.setItem('pastRooms', pastRooms);
+
+      this.getPastRoomList();
+    },
+    getPastRoomList() {
+      const pastRooms = this.getPastRooms();
+      this.pastRooms = pastRooms.map((room) => {
+        const splitRoom = room.split('&&&');
+        return {
+          name: splitRoom[0],
+          id: splitRoom[1],
+        };
+      });
+    }
   },
   mounted() {
     const name = this.getUsername();
     if (name) {
       this.isSet = true;
     }
+
+    this.getPastRoomList();
   },
 }
 </script>
@@ -71,5 +99,18 @@ export default {
 
   .dat-space {
     margin: $pad-unit;
+  }
+
+  .past-rooms li {
+    list-style-type: none;
+
+    a {
+      color: $ui-color-action;
+    }
+
+    .remove-room {
+      color: red;
+      cursor: pointer;
+    }
   }
 </style>

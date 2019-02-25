@@ -114,7 +114,7 @@ export default {
     };
   },
   beforeMount() {
-    this.getRoomData();
+    this.joinRoom();
     // Get the initial data and set up the handlers
   },
   computed: {
@@ -148,11 +148,17 @@ export default {
     toggleShowVotes() {
       this.showVotes = !this.showVotes;
     },
-    getRoomData() {
+    joinRoom() {
       const username = this.getUsername();
       const roomId = this.roomId;
       axios.post('/join-room', { username, roomId } ).then((response) => {
-        console.log('Room joined', response.data);
+        // eslint-disable-next-line
+        console.log('Room joined', response.data.roomData);
+        const room = {
+          roomId,
+          roomData: response.data.roomData,
+        }
+        this.setPastRoom(room);
       });
     },
     destroy() {
