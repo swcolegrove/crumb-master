@@ -1,6 +1,6 @@
 <template>
   <main>
-    <div v-if="!isSet">
+    <div v-if="!usernameIsSet">
       <span class="dat-space">Enter your username:</span>
       <div class="row">
         <div class="col-12">
@@ -10,6 +10,7 @@
       </div>
     </div>
     <div v-else >
+      <span class="dat-space">Welcome, {{ username }}!</span>
       <span class="dat-space">Create or join a room</span>
       <div class="row">
         <div class="col-12">
@@ -36,14 +37,14 @@ export default {
   data() {
     return {
       username: '',
-      isSet: false,
+      usernameIsSet: false,
       roomName: '',
     };
   },
   methods: {
     setName() {
       this.setUsername(this.username);
-      this.isSet = true;
+      this.usernameIsSet = true;
     },
     createRoom() {
       const name = this.getUsername();
@@ -56,7 +57,8 @@ export default {
   mounted() {
     const name = this.getUsername();
     if (name) {
-      this.isSet = true;
+      this.usernameIsSet = true;
+      this.username = name;
     }
   },
 }
@@ -69,5 +71,10 @@ export default {
 
   .dat-space {
     margin: $pad-unit;
+  }
+
+  input.dat-space {
+    padding-left: 4px;
+    padding-right: 4px;
   }
 </style>

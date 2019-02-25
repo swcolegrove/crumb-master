@@ -4,8 +4,7 @@ const http = require('http').Server(app);
 const path = require('path');
 const io = require('socket.io')(http);
 const serveStatic = require('serve-static');
-const uuidv4 = require('uuid/v4');
-const { connectToClient, addMessage, getMessages, createRoom } = require('./lib/redis.js');
+const { connectToClient, addMessage, getMessages, createRoom, getRoom } = require('./lib/redis.js');
 
 app.use(express.json());
 app.use(express.urlencoded());
@@ -19,14 +18,29 @@ app.use(serveStatic(path.join(__dirname, 'dist')));
 // eslint-disable-next-line
 const consoleMsg = msg => console.log(msg);
 
+app.get('/ping', (req, res) => {
+  res.send({ success: true });
+});
+
 app.post('/create-room', (req, res) => {
   // 1. create room uuid & use as redis hash key
   // 2. Add current user with vote none as key value pair on the hash
   const userName = JSON.stringify(req.body.name);
-  const roomId = uuidv4();
-  // createRoom(roomId).then(() => {
-    res.send({ status: 200, roomId });
-  // })
+  createRoom({ userName }).then((roomId) => {
+    res.send({ status: 200, roomId, userName });
+  }).catch((err) => {
+    console.log('CreateRoom', err); // eslint-disable-line
+    res.status(500).send({ userName, err });
+  });
+});
+
+app.get('/get-room/:roomId', (req, res) => {
+  const roomId = req.params.roomId;
+  getRoom({ roomId }).then((votes) => {
+    res.send({ roomId, votes });
+  }).catch((err) => {
+    res.status(500).send({ roomId, err });
+  });
 });
 
 app.post('/sendMessage', (req, res) => {

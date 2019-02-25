@@ -6,7 +6,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "build:watch": "nodemon --watch src --exec \"npm run build\"",
+    "build:watch": "nodemon --watch src --exec \"env-cmd .env vue-cli-service build\" --ext scss,js,vue",
     "test": "echo \"TESTS??? We don't need no stinkin' tests!\" && exit 1",
     "lint": "vue-cli-service lint",
     "dev": "concurrently \"npm run build:watch\" \"env-cmd .env npm start\"",
