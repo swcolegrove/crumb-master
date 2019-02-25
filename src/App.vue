@@ -10,7 +10,9 @@
       </toggle>
     </header>
 
-    <router-view></router-view>
+    <div class="view-wrapper">
+      <router-view></router-view>
+    </div>
   </div>
 </template>
 
@@ -63,6 +65,10 @@ export default {
       header {
         background-color: $dark-theme-bg-primary;
       }
+
+      a {
+        color: $ui-color-action;
+      }
     }
 
     &.light {
@@ -73,5 +79,10 @@ export default {
         background-color: $light-theme-bg-primary;
       }
     }
+  }
+
+  .view-wrapper {
+    width: 100%;
+    overflow: auto;
   }
 </style>
