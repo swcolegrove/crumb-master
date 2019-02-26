@@ -26,6 +26,7 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.7.2",
     "@vue/cli-plugin-babel": "^3.4.0",
     "@vue/cli-plugin-eslint": "^3.4.0",
     "@vue/cli-service": "^3.4.0",

@@ -60,58 +60,43 @@ app.get('/room-data/:roomId', (req, res) => {
   }, consoleMsg);
 });
 
-app.post('/sendMessage', (req, res) => {
-  const msg = req.body.message;
-  redisLib.addMessage(msg).then(() => {
-    res.send({ status: 200, message: 'message sent' })
-  }, consoleMsg);
+app.post('/update-room-name', (req, res) => {
+  const { roomId, roomName } = req.body;
+  let room = {
+    roomId,
+    roomName,
+  };
+  redisLib.updateRoomName(room).then(() => {
+    res.send({ status: 200, message: 'Room name updated'});
+  });
 });
 
-app.get('/messages', function(req, res) {
-  redisLib.getMessages().then(messages => {
-    res.send(messages);
-  }, consoleMsg);
+app.post('/cast-vote', (req, res) => {
+  const { roomId, username, value } = req.body;
+  if (roomId && username && value) {
+    redisLib.addVoteToRoom({ roomId, username, vote: value }).then(roomData => {
+      res.send({ status: 200, message: 'Vote cast'});
+    }).catch((err) => {
+      res.send({ status: 500, message: `Room vote error: ${err}`});
+    });
+  } else {
+    res.send({ status: 500, message: `Required data not present`});
+  }
 });
 
 redisLib.connectToClient().then(res => {
   io.on('connection', (socket) => {
     consoleMsg('a user connected');
-    res.subscribe("chatMessages");
 
     socket.on('disconnect', () => {
       consoleMsg('user disconnected');
     });
 
-    socket.on('chat message', (msg) => {
-      consoleMsg(`message: ${msg}`);
-      io.emit('chat message', msg);
-    });
-
-    socket.on('room join', (msg) => {
-      const { username, roomId } = msg;
-      let room = {
-        roomId,
-        username,
-        vote: '-',
-      };
-      redisLib.joinRoom(room).then((roomData) => {
-        io.emit(`room ${roomId}`, roomData);
-      })
-    });
-
-    socket.on('room vote', (msg) => {
-      const { roomId, username, value } = msg;
-      if (roomId && username && value) {
-        redisLib.addVoteToRoom({ roomId, username, vote: value }).then(roomData => {
-          io.emit(`room ${roomId}`, roomData);
-          // TODO: If all votes are in, time to show votes
-          // io.emit(`show votes ${roomId}`);
-        }).catch((err) => {
-          console.log(`room vote error: ${err}`); // eslint-disable-line
-        });
-      } else {
-        console.log('Required data not present'); // eslint-disable-line
-      }
+    socket.on('broadcast:room-update', (msg) => {
+      const { roomId } = msg;
+      redisLib.getRoomData({ roomId }).then(roomData => {
+        io.emit(`room updated ${roomId}`, roomData);
+      }, consoleMsg);
     });
   });
 });
