@@ -99,6 +99,11 @@ redisLib.connectToClient().then(res => {
       })
     });
 
+    socket.on('show vote change', ({ roomId, votesAreShown }) => {
+      console.log('show vote change', votesAreShown); // eslint-disable-line
+      io.emit(`showVotes change ${roomId}`, { votesAreShown });
+    });
+
     socket.on('room vote', (msg) => {
       const { roomId, username, value } = msg;
       if (roomId && username && value) {

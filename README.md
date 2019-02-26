@@ -11,3 +11,4 @@ agile planning poker
 - If going to a room without a name, user gets redirected to the room after entering your name
 - Redis is flushed daily
 - Crumb master can lock votes in a room
+- Validate users only affecting a room they're in (can't show votes in another room)

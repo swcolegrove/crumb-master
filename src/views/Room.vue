@@ -132,6 +132,10 @@ export default {
         value,
       }));
     });
+
+    socket.on(`showVotes change ${this.roomId}`, ({ votesAreShown }) => {
+      this.showVotes = votesAreShown;
+    });
   },
   computed: {
     roomId() {
@@ -157,7 +161,8 @@ export default {
       this.isCrumbMaster = true;
     },
     toggleShowVotes() {
-      this.showVotes = !this.showVotes;
+      // this.showVotes = !this.showVotes;
+      socket.emit('show vote change', { roomId: this.roomId, votesAreShown: !this.showVotes });
     },
     joinRoom() {
       // TODO: If someone goes direct to a link with no room name - do we set a random one?
