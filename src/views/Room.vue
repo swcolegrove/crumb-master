@@ -37,6 +37,7 @@
 import io from 'socket.io-client';
 import UserSession from '../mixins/UserSession.js';
 import VoteList from '../components/VoteList.vue';
+import axios from 'axios';
 
 export default {
   name: 'Room',
@@ -113,6 +114,7 @@ export default {
     };
   },
   beforeMount() {
+    this.joinRoom();
     // Get the initial data and set up the handlers
   },
   computed: {
@@ -148,6 +150,19 @@ export default {
     toggleShowVotes() {
       this.showVotes = !this.showVotes;
     },
+    joinRoom() {
+      const username = this.getUsername();
+      const roomId = this.roomId;
+      axios.post('/join-room', { username, roomId } ).then((response) => {
+        // eslint-disable-next-line
+        console.log('Room joined', response.data.roomData);
+        const room = {
+          roomId,
+          roomData: response.data.roomData,
+        }
+        this.setPastRoom(room);
+      });
+    },
   },
   mounted() {
     const name = this.getUsername();
@@ -182,5 +197,9 @@ export default {
     margin-right: $pad-unit;
     margin-bottom: $pad-unit;
   }
+}
+
+.vote-controls button {
+  margin-bottom: $pad-unit;
 }
 </style>
