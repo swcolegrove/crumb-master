@@ -18,7 +18,7 @@
 
 <script>
 import Toggle from './components/Toggle.vue';
-import { isUndefined, toBoolean } from '../utils.js';
+import { isNullOrUndefined, toBoolean } from '../utils.js';
 
 export default {
   name: 'app',
@@ -36,7 +36,7 @@ export default {
     },
     getSpooky() {
       const localSpooky = localStorage.getItem('isSpooky');
-      if (!isUndefined(localSpooky)) {
+      if (!isNullOrUndefined(localSpooky)) {
         this.isSpooky = toBoolean(localSpooky);
       } else {
         localStorage.setItem('isSpooky', this.isSpooky);
@@ -77,6 +77,7 @@ export default {
 
       header {
         background-color: $light-theme-bg-primary;
+        box-shadow: 0 1px 3px rgba(33,33,33,.2);
       }
     }
   }

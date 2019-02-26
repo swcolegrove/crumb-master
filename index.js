@@ -36,7 +36,7 @@ app.post('/create-room', (req, res) => {
   };
   redisLib.createRoom(room).then(() => {
     res.send({ status: 200, roomData: room });
-  })
+  });
 });
 
 app.post('/join-room', (req, res) => {

@@ -58,6 +58,10 @@ export default {
   methods: {
     setName() {
       this.setUsername(this.username);
+      const roomQuery = this.$route.query.roomId;
+      if (roomQuery) {
+        this.$router.push({ path: `/room/${roomQuery}` });
+      }
       this.usernameIsSet = true;
     },
     createRoom() {
@@ -116,7 +120,7 @@ export default {
     padding-left: 4px;
     padding-right: 4px;
   }
-  
+
   .past-rooms li {
     list-style-type: none;
 

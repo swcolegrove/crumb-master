@@ -1,13 +1,4 @@
 export default {
-  beforeMount() {
-    console.log('Checking for user session'); // eslint-disable-line no-console
-    // 1. Check for user session
-    // 2. If no user - bring to the home page
-    const username = this.getUsername();
-    if (!username) {
-      this.$router.push({ path: `/` });
-    }
-  },
   methods: {
     getUsername() {
       return localStorage.getItem('username');
@@ -19,9 +10,13 @@ export default {
       const pastRooms = localStorage.getItem('pastRooms') || '[]';
       return JSON.parse(pastRooms);
     },
-    setPastRoom(room) {
+    setPastRoom(roomId, roomName) {
+      if (!roomId || !roomName) {
+        return;
+      }
+
       let pastRooms = this.getPastRooms();
-      const currentRoom = `${room.roomData['room-name']}&&&${room.roomId}`;
+      const currentRoom = `${roomName}&&&${roomId}`;
       if (pastRooms && pastRooms.length > 0) {
         if (!pastRooms.includes(currentRoom)) {
           pastRooms.push(currentRoom);

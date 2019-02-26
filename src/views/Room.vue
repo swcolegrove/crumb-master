@@ -1,6 +1,7 @@
 <template>
   <main>
     <div class="room-info">Room ID: <a href="#">{{ roomId }}</a></div>
+    <div class="room-info">Room Name: {{ roomName }}</div>
     <div class="player-info"><h2>{{ playerName }}</h2></div>
     <div class="story-info">
       <label>
@@ -107,6 +108,15 @@ export default {
       votes: [],
     };
   },
+  beforeMount() {
+    // 1. Check for user session
+    // 2. If no user - bring to the home page
+    const username = this.getUsername();
+    if (!username) {
+      const roomId = this.$route.params.roomId;
+      this.$router.push({ path: `/`, query: { roomId: roomId } });
+    }
+  },
   mounted() {
     this.joinRoom();
 
@@ -115,6 +125,7 @@ export default {
 
     socket.on(`room ${this.roomId}`, (msg) => {
       this.roomName = msg['room-name'];
+      this.setPastRoom(this.roomId, this.roomName);
       delete msg['room-name'];
       this.votes = Object.entries(msg).map(([ playerName, value ]) => ({
         playerName,
@@ -149,10 +160,11 @@ export default {
       this.showVotes = !this.showVotes;
     },
     joinRoom() {
+      // TODO: If someone goes direct to a link with no room name - do we set a random one?
       const username = this.getUsername();
       this.playerName = username;
       const roomId = this.roomId;
-      
+
       socket.emit('room join', { username, roomId });
     },
   },
