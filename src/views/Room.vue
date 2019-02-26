@@ -25,7 +25,7 @@
       >{{ voteOption.text }}</button>
     </div>
     <div class="vote-area">
-      <vote-list :players="players" :votes="votes" :show-votes="showVotes"></vote-list>
+      <vote-list :votes="votes" :show-votes="showVotes"></vote-list>
     </div>
     <div class="vote-summary">
 
@@ -34,10 +34,11 @@
 </template>
 
 <script>
-import socket from 'socket.io-client';
+import io from 'socket.io-client';
 import UserSession from '../mixins/UserSession.js';
 import VoteList from '../components/VoteList.vue';
-import axios from 'axios';
+
+const socket = io();
 
 export default {
   name: 'Room',
@@ -51,12 +52,7 @@ export default {
       isSpectator: false,
       playerId: '7',
       playerName: '',
-      players: [
-        { id: '7', name: 'Name 1' },
-        { id: '8', name: 'Name 2' },
-        { id: '9', name: 'Name 3' },
-      ],
-      // playerVotesArchive: [],
+      roomName: '',
       showVotes: false,
       voteOptions: [
         {
@@ -108,14 +104,23 @@ export default {
           value: '?',
         },
       ],
-      votes: [
-        { playerId: '8', value: 17, }
-      ],
+      votes: [],
     };
   },
-  beforeMount() {
+  mounted() {
     this.joinRoom();
-    // Get the initial data and set up the handlers
+
+    const name = this.getUsername();
+    this.playerName = name;
+
+    socket.on(`room ${this.roomId}`, (msg) => {
+      this.roomName = msg['room-name'];
+      delete msg['room-name'];
+      this.votes = Object.entries(msg).map(([ playerName, value ]) => ({
+        playerName,
+        value,
+      }));
+    });
   },
   computed: {
     roomId() {
@@ -125,14 +130,7 @@ export default {
   methods: {
     castVote(value) {
       if (!this.isSpectator) {
-        // // Forget this, we want the data from the socket!
-        // const lastVote = this.votes.find(vote => vote.playerId === this.playerId);
-        // if (lastVote) {
-        //   lastVote.value = value;
-        // } else {
-        //   this.votes.push({ playerId: this.playerId, value });
-        // }
-        socket.emit('room vote', { roomId: this.roomId, userName: this.playerName, value });
+        socket.emit('room vote', { roomId: this.roomId, username: this.playerName, value });
       }
     },
     clearVotes() {
@@ -152,26 +150,11 @@ export default {
     },
     joinRoom() {
       const username = this.getUsername();
+      this.playerName = username;
       const roomId = this.roomId;
-      axios.post('/join-room', { username, roomId } ).then((response) => {
-        // eslint-disable-next-line
-        console.log('Room joined', response.data.roomData);
-        const room = {
-          roomId,
-          roomData: response.data.roomData,
-        }
-        this.setPastRoom(room);
-      });
+      
+      socket.emit('room join', { username, roomId });
     },
-  },
-  mounted() {
-    const name = this.getUsername();
-    this.playerName = name;
-
-    socket.on(`room ${this.roomId}`, (msg) => {
-      // this.incomingMessage(msg);
-      console.log('ROOM DATA', msg); // eslint-disable-line
-    });
   },
 }
 </script>

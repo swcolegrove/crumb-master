@@ -1,5 +1,5 @@
 export default {
-  mounted() {
+  beforeMount() {
     console.log('Checking for user session'); // eslint-disable-line no-console
     // 1. Check for user session
     // 2. If no user - bring to the home page
@@ -16,7 +16,7 @@ export default {
       localStorage.setItem('username', name);
     },
     getPastRooms() {
-      const pastRooms = localStorage.getItem('pastRooms');
+      const pastRooms = localStorage.getItem('pastRooms') || '[]';
       return JSON.parse(pastRooms);
     },
     setPastRoom(room) {

@@ -7,9 +7,9 @@
       </tr>
     </thead>
     <tbody>
-      <tr  v-for="player in players" :key="player.id">
-        <td>{{ player.name }}</td>
-        <td :class="{ 'hide-vote': !showVotes }">{{ showVotes ? (getVote(player.id) || {}).value || '-' : '-' }}</td>
+      <tr v-for="vote in votes" :key="vote.playerName">
+        <td>{{ vote.playerName }}</td>
+        <td :class="{ 'hide-vote': !showVotes }">{{ showVotes ? vote.value || '-' : '-' }}</td>
       </tr>
     </tbody>
   </table>
@@ -19,15 +19,9 @@
 export default {
   name: 'VoteList',
   props: {
-    players: Array,
     showVotes: Boolean,
     votes: Array,
   },
-  methods: {
-    getVote(playerId) {
-      return this.votes.find(vote => vote.playerId === playerId);
-    }
-  }
 }
 </script>
 
