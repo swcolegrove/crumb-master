@@ -1,7 +1,7 @@
 <template>
   <main>
     <div class="room-info">Room ID: <a href="#">{{ roomId }}</a></div>
-    <div class="room-info">Room Name: {{ roomName }}</div>
+    <div class="room-info">Room Name: {{ roomName }} <i @click="updateRoom" class="fas fa-pencil-alt"></i></div>
     <div class="player-info"><h2>{{ playerName }}</h2></div>
     <div class="story-info">
       <label>
@@ -38,6 +38,7 @@
 import io from 'socket.io-client';
 import UserSession from '../mixins/UserSession.js';
 import VoteList from '../components/VoteList.vue';
+import axios from 'axios';
 
 const socket = io();
 
@@ -123,11 +124,11 @@ export default {
     const name = this.getUsername();
     this.playerName = name;
 
-    socket.on(`room ${this.roomId}`, (msg) => {
-      this.roomName = msg['room-name'];
-      this.setPastRoom(this.roomId, this.roomName);
-      delete msg['room-name'];
-      this.votes = Object.entries(msg).map(([ playerName, value ]) => ({
+    socket.on(`room updated ${this.roomId}`, newRoomData => {
+      console.log('The room just updated', newRoomData);
+      this.roomName = newRoomData['room-name'];
+      delete newRoomData['room-name'];
+      this.votes = Object.entries(newRoomData).map(([ playerName, value ]) => ({
         playerName,
         value,
       }));
@@ -145,7 +146,9 @@ export default {
   methods: {
     castVote(value) {
       if (!this.isSpectator) {
-        socket.emit('room vote', { roomId: this.roomId, username: this.playerName, value });
+        axios.post('/cast-vote', { roomId: this.roomId, username: this.playerName, value } ).then(() => {
+          socket.emit('broadcast:room-update', { roomId: this.roomId });
+        });
       }
     },
     clearVotes() {
@@ -169,9 +172,16 @@ export default {
       const username = this.getUsername();
       this.playerName = username;
       const roomId = this.roomId;
-
-      socket.emit('room join', { username, roomId });
+      axios.post('/join-room', { username, roomId } ).then((response) => {
+        this.setPastRoom(roomId, response.data.roomData['room-name']);
+        socket.emit('broadcast:room-update', { roomId: this.roomId });
+      });
     },
+    updateRoom() {
+      axios.post('/update-room-name', { roomId: this.roomId, roomName: this.roomName}).then(() => {
+        socket.emit('broadcast:room-update', { roomId: this.roomId });
+      });
+    }
   },
 }
 </script>
@@ -201,5 +211,11 @@ export default {
 
 .vote-controls button {
   margin-bottom: $pad-unit;
+}
+
+i {
+  margin-left: 1rem;
+  color: $ui-color-action;
+  cursor: pointer;
 }
 </style>
