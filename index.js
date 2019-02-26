@@ -34,8 +34,8 @@ app.post('/create-room', (req, res) => {
     roomId,
     roomName,
   };
-  redisLib.createRoom(room).then((roomData) => {
-    res.send({ status: 200, roomData });
+  redisLib.createRoom(room).then(() => {
+    res.send({ status: 200, roomData: room });
   })
 });
 

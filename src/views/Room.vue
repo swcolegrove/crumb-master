@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import io from 'socket.io-client';
+import socket from 'socket.io-client';
 import UserSession from '../mixins/UserSession.js';
 import VoteList from '../components/VoteList.vue';
 import axios from 'axios';
