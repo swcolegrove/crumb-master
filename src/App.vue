@@ -3,29 +3,37 @@
     <header>
       <router-link to="/"><img class="logo" src="./assets/crumb-master.png" /></router-link>
 
-      <toggle
-        v-model="isSpooky"
-        :checked="isSpooky"
-        label="Spooky Mode"
-        >
-      </toggle>
+      <button class="fill" @click="showModal('settings')"><i class="fas fa-cog"></i></button>
     </header>
 
     <div class="view-wrapper">
       <router-view></router-view>
     </div>
+
+    <modal name="settings" heading="Settings">
+      <div class="row">
+        <div class="col-12">
+          <p>Spooky Mode:</p>
+          <toggle
+            v-model="isSpooky"
+            :checked="isSpooky"
+            >
+          </toggle>
+        </div>
+      </div>
+    </modal>
+    <modal-backdrop></modal-backdrop>
   </div>
 </template>
 
 <script>
-import Toggle from './components/Toggle.vue';
-import { isNullOrUndefined, toBoolean } from '../utils.js';
+import components from './components';
+import { isNullOrUndefined, toBoolean } from './util/utils.js';
+import { EventBus } from './util/EventBus.js';
 
 export default {
   name: 'app',
-  components: {
-    toggle: Toggle,
-  },
+  components,
   data() {
     return {
       isSpooky: true,
@@ -43,15 +51,21 @@ export default {
         localStorage.setItem('isSpooky', this.isSpooky);
       }
     },
+    setTheme(isSpooky) {
+      this.isSpooky = isSpooky;
+      localStorage.isSpooky = isSpooky;
+    },
+    showModal(modalName) {
+      EventBus.$emit('showModal', modalName);
+    }
   },
   mounted() {
     this.getSpooky();
+
+    EventBus.$on('theme:change', isSpooky => {
+      this.setTheme(isSpooky);
+    });
   },
-  watch: {
-    isSpooky: (newVal) => {
-      localStorage.isSpooky = newVal;
-    },
-  }
 }
 </script>
 

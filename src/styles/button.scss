@@ -85,9 +85,16 @@ button.diagonal {
 
   &:hover {
     background-position: 0;
+    color: $white;
   }
 }
 
 .light button {
   color: $light-theme-text-color;
+}
+
+button .fas {
+  line-height: 0;
+  margin: 0;
+  color: inherit;
 }

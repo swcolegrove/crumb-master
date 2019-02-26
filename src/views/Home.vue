@@ -125,7 +125,7 @@ export default {
     list-style-type: none;
 
     a.remove-room {
-      color: red;
+      color: $ui-color-danger;
       cursor: pointer;
     }
   }

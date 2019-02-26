@@ -1,12 +1,9 @@
 <template>
-  <div class="toggle-wrapper">
-    <span class="toggle-label">{{ label }}</span>
-    <label>
-      <input type="checkbox" :checked="checked"
-        v-on:input="$emit('input', $event.target.checked)">
-      <span class="toggle"></span>
-    </label>
-  </div>
+  <label>
+    <input type="checkbox" :checked="checked"
+      v-on:input="$emit('input', $event.target.checked)">
+    <span class="toggle"></span>
+  </label>
 </template>
 
 <script>
@@ -17,20 +14,11 @@ export default {
       type: Boolean,
       required: true,
     },
-    label: {
-      type: String,
-    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-  .toggle-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
   label {
     position: relative;
     display: inline-block;

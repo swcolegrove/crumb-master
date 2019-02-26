@@ -12,7 +12,7 @@
     <div class="vote-controls">
       <button class="glow" @click="clearVotes">Clear Votes</button>
       <button class="fill" @click="toggleShowVotes()">Show Votes</button>
-      <button class="diagonal" @click="makeMeCrumbMaster">I am the Crumb Master!</button>
+      <button class="diagonal" @click="makeMeCrumbMaster"><i class="fas fa-crown"></i> I am the Crumb Master!</button>
     </div>
     <div class="story-clock">
       Time: 00:12:34
@@ -35,18 +35,16 @@
 </template>
 
 <script>
+import components from '../components';
 import io from 'socket.io-client';
 import UserSession from '../mixins/UserSession.js';
-import VoteList from '../components/VoteList.vue';
 import axios from 'axios';
 
 const socket = io();
 
 export default {
   name: 'Room',
-  components: {
-    'vote-list': VoteList,
-  },
+  components,
   mixins: [UserSession],
   data() {
     return {
@@ -215,7 +213,6 @@ export default {
 
 i {
   margin-left: 1rem;
-  color: $ui-color-action;
   cursor: pointer;
 }
 
