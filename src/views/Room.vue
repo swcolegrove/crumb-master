@@ -19,7 +19,7 @@
     </div>
     <div class="vote-options">
       <button
-        class="btn-vote"
+        class="btn-vote diagonal"
         v-for="(voteOption, idx) in voteOptions"
         :key="idx"
         @click="castVote(voteOption.value)"
@@ -217,5 +217,10 @@ i {
   margin-left: 1rem;
   color: $ui-color-action;
   cursor: pointer;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
 }
 </style>

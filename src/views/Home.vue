@@ -124,11 +124,7 @@ export default {
   .past-rooms li {
     list-style-type: none;
 
-    a {
-      color: $ui-color-action;
-    }
-
-    .remove-room {
+    a.remove-room {
       color: red;
       cursor: pointer;
     }

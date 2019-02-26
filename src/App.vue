@@ -1,7 +1,8 @@
 <template>
   <div id="app" :class="getUiTheme()">
     <header>
-      <h1>Crumb Master</h1>
+      <router-link to="/"><img class="logo" src="./assets/crumb-master200.png" /></router-link>
+
       <toggle
         v-model="isSpooky"
         :checked="isSpooky"
@@ -57,6 +58,10 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
 
+  .logo {
+    width: 50px;
+  }
+
   #app {
     &.dark {
       background-color: $dark-theme-bg-secondary;
@@ -64,10 +69,6 @@ export default {
 
       header {
         background-color: $dark-theme-bg-primary;
-      }
-
-      a {
-        color: $ui-color-action;
       }
     }
 
