@@ -5,7 +5,7 @@
     <div class="story-info">
       <label>
         Story Description:
-        <textarea></textarea>
+        <textarea v-model="storyText"></textarea>
       </label>
     </div>
     <div class="vote-controls">
@@ -36,6 +36,7 @@
 <script>
 import components from '../components';
 import io from 'socket.io-client';
+import voteOptions from '../defaultVoteOptions';
 import UserSession from '../mixins/UserSession.js';
 import axios from 'axios';
 
@@ -54,56 +55,9 @@ export default {
       roomLink: '',
       roomName: '',
       showVotes: false,
-      voteOptions: [
-        {
-          text: '0 points',
-          value: '0',
-        },
-        {
-          text: '½ point',
-          value: '0.5',
-        },
-        {
-          text: '1 point',
-          value: '1',
-        },
-        {
-          text: '2 points',
-          value: '2',
-        },
-        {
-          text: '3 points',
-          value: '3',
-        },
-        {
-          text: '5 points',
-          value: '5',
-        },
-        {
-          text: '8 points',
-          value: '8',
-        },
-        {
-          text: '13 points',
-          value: '13',
-        },
-        {
-          text: '20 points',
-          value: '20',
-        },
-        {
-          text: '40 points',
-          value: '40',
-        },
-        {
-          text: '100 points',
-          value: '100',
-        },
-        {
-          text: '?',
-          value: '?',
-        },
-      ],
+      storyText: '',
+      storyTextIsDirty: false,
+      voteOptions,
       votes: [],
     };
   },
@@ -142,6 +96,12 @@ export default {
       return this.$route.params.roomId;
     },
   },
+  watch: {
+    storyText() {
+      this.storyTextIsDirty = true;
+      this.debounceStorySyncing();
+    },
+  },
   methods: {
     castVote(value) {
       if (!this.isSpectator) {
@@ -167,6 +127,10 @@ export default {
         alert('You are using a bad browser. Stop that');
       }
     },
+    debounceStorySyncing: _.debounce(function debounceStorySyncing() {
+      this.storyTextIsDirty = false;
+      socket.emit('room story update', { roomId: this.roomId, story: this.storyText });
+    }),
     makeMeCrumbMaster() {
       this.isCrumbMaster = true;
     },

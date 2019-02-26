@@ -6,6 +6,7 @@ const io = require('socket.io')(http);
 const serveStatic = require('serve-static');
 const uuidv4 = require('uuid/v4');
 const redisLib = require('./lib/redis.js');
+const utils = require('./utils');
 
 app.use(express.json());
 app.use(express.urlencoded());
@@ -136,6 +137,14 @@ redisLib.connectToClient().then(res => {
     socket.on('timerEvent', (msg) => {
       const { roomId, eventName } = msg;
       io.emit(`room:${roomId}:timerEvent`, eventName);
+    });
+    
+    socket.on('room story update', ({ roomId, story }) => {
+      if (roomId && !utils.isNullOrUndefined(story)) {
+        io.emit(`room story ${roomId}`, { story });
+      } else {
+        // console.log('Required room story update data not present');
+      }
     });
   });
 });
