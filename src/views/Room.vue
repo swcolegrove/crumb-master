@@ -147,7 +147,7 @@ export default {
     castVote(value) {
       if (!this.isSpectator) {
         axios.post('/cast-vote', { roomId: this.roomId, username: this.playerName, value } ).then(() => {
-          socket.emit('broadcast:room-update', { roomId: this.roomId });
+          socket.emit('room:update', { roomId: this.roomId });
         });
       }
     },
@@ -174,12 +174,12 @@ export default {
       const roomId = this.roomId;
       axios.post('/join-room', { username, roomId } ).then((response) => {
         this.setPastRoom(roomId, response.data.roomData['room-name']);
-        socket.emit('broadcast:room-update', { roomId: this.roomId });
+        socket.emit('room:update', { roomId: this.roomId });
       });
     },
     updateRoom() {
       axios.post('/update-room-name', { roomId: this.roomId, roomName: this.roomName}).then(() => {
-        socket.emit('broadcast:room-update', { roomId: this.roomId });
+        socket.emit('room:update', { roomId: this.roomId });
       });
     }
   },

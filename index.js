@@ -97,7 +97,7 @@ redisLib.connectToClient().then(res => {
       io.emit(`showVotes change ${roomId}`, { votesAreShown });
     });
 
-    socket.on('broadcast:room-update', (msg) => {
+    socket.on('room:update', (msg) => {
       const { roomId } = msg;
       redisLib.getRoomData({ roomId }).then(roomData => {
         io.emit(`room updated ${roomId}`, roomData);
