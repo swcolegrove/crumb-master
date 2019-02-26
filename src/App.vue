@@ -1,7 +1,7 @@
 <template>
   <div id="app" :class="getUiTheme()">
     <header>
-      <router-link to="/"><img class="logo" src="./assets/crumb-master200.png" /></router-link>
+      <router-link to="/"><img class="logo" src="./assets/crumb-master.png" /></router-link>
 
       <toggle
         v-model="isSpooky"
