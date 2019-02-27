@@ -22,6 +22,8 @@ const consoleMsg = msg => console.log(msg);
 app.post('/destroy', (req, res) => {
   redisLib.flushKeys().then(() => {
     res.send({ status: 200, message: 'Its all gone' });
+  }).catch((err) => {
+    res.status(500).send({ message: `Error flushing redis: ${err}`});
   });
 });
 
@@ -36,6 +38,8 @@ app.post('/create-room', (req, res) => {
   };
   redisLib.createRoom(room).then(() => {
     res.send({ status: 200, roomData: room });
+  }).catch((err) => {
+    res.status(500).send({ message: `Error creating room: ${err}`});
   });
 });
 
@@ -50,14 +54,18 @@ app.post('/join-room', (req, res) => {
   };
   redisLib.joinRoom(room).then((roomData) => {
     res.send({ status: 200, roomData });
-  })
+  }).catch((err) => {
+    res.status(500).send({ message: `Error joining room: ${err}`});
+  });
 });
 
 app.get('/room-data/:roomId', (req, res) => {
   const roomId = req.params.roomId;
   redisLib.getRoomData({ roomId }).then(roomData => {
     res.send(roomData);
-  }, consoleMsg);
+  }).catch((err) => {
+    res.status(500).send({ message: `Error getting room data: ${err}`});
+  });
 });
 
 app.post('/update-room-name', (req, res) => {
@@ -68,6 +76,8 @@ app.post('/update-room-name', (req, res) => {
   };
   redisLib.updateRoomName(room).then(() => {
     res.send({ status: 200, message: 'Room name updated'});
+  }).catch((err) => {
+    res.status(500).send({ message: `Room update error: ${err}`});
   });
 });
 
@@ -77,10 +87,10 @@ app.post('/cast-vote', (req, res) => {
     redisLib.addVoteToRoom({ roomId, username, vote: value }).then(roomData => {
       res.send({ status: 200, message: 'Vote cast'});
     }).catch((err) => {
-      res.send({ status: 500, message: `Room vote error: ${err}`});
+      res.status(500).send({ message: `Room vote error: ${err}`});
     });
   } else {
-    res.send({ status: 500, message: `Required data not present`});
+    res.status(500).send({ message: `Required data not present`});
   }
 });
 
@@ -94,14 +104,19 @@ redisLib.connectToClient().then(res => {
 
     socket.on('show vote change', ({ roomId, votesAreShown }) => {
       console.log('show vote change', votesAreShown); // eslint-disable-line
-      io.emit(`showVotes change ${roomId}`, { votesAreShown });
+      io.emit(`room:${roomId}:showVotes change`, { votesAreShown });
     });
 
     socket.on('room:update', (msg) => {
       const { roomId } = msg;
       redisLib.getRoomData({ roomId }).then(roomData => {
-        io.emit(`room updated ${roomId}`, roomData);
+        io.emit(`room:${roomId}:changed`, roomData);
       }, consoleMsg);
+    });
+
+    socket.on('timerEvent', (msg) => {
+      const { roomId, eventName } = msg;
+      io.emit(`room:${roomId}:timerEvent`, eventName);
     });
   });
 });

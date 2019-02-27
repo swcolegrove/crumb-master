@@ -15,9 +15,9 @@
     </div>
     <div class="story-clock">
       Time: {{ timer }}
-      <i class="fas fa-stop" v-if="isTimerGoing" @click="stopTimer"></i>
-      <i class="fas fa-play" v-else @click="startTimer"></i>
-      <i class="fas fa-trash-alt" @click="clearTimer"></i>
+      <i class="fas fa-stop" v-if="isTimerGoing" @click="timerEvent('stop')"></i>
+      <i class="fas fa-play" v-else @click="timerEvent('start')"></i>
+      <i class="fas fa-trash-alt" @click="timerEvent('clear')"></i>
     </div>
     <div class="vote-options">
       <button
@@ -64,47 +64,47 @@ export default {
       voteOptions: [
         {
           text: '0 points',
-          value: 0,
+          value: '0',
         },
         {
           text: '½ point',
-          value: 0.5,
+          value: '0.5',
         },
         {
           text: '1 point',
-          value: 1,
+          value: '1',
         },
         {
           text: '2 points',
-          value: 2,
+          value: '2',
         },
         {
           text: '3 points',
-          value: 3,
+          value: '3',
         },
         {
           text: '5 points',
-          value: 5,
+          value: '5',
         },
         {
           text: '8 points',
-          value: 8,
+          value: '8',
         },
         {
           text: '13 points',
-          value: 13,
+          value: '13',
         },
         {
           text: '20 points',
-          value: 20,
+          value: '20',
         },
         {
           text: '40 points',
-          value: 40,
+          value: '40',
         },
         {
           text: '100 points',
-          value: 100,
+          value: '100',
         },
         {
           text: '?',
@@ -130,7 +130,7 @@ export default {
     this.playerName = name;
     this.roomLink = `${window.location.origin}/#${this.$route.path}`;
 
-    socket.on(`room updated ${this.roomId}`, newRoomData => {
+    socket.on(`room:${this.roomId}:changed`, newRoomData => {
       console.log('The room just updated', newRoomData);
       this.roomName = newRoomData['room-name'];
       delete newRoomData['room-name'];
@@ -140,8 +140,18 @@ export default {
       }));
     });
 
-    socket.on(`showVotes change ${this.roomId}`, ({ votesAreShown }) => {
+    socket.on(`room:${this.roomId}:showVotes change`, ({ votesAreShown }) => {
       this.showVotes = votesAreShown;
+    });
+
+    socket.on(`room:${this.roomId}:timerEvent`, eventName => {
+      if (eventName === 'start') {
+        this.startTimer();
+      } else if (eventName === 'stop') {
+        this.stopTimer();
+      } else if (eventName === 'clear') {
+        this.clearTimer();
+      }
     });
   },
   computed: {
@@ -150,6 +160,9 @@ export default {
     },
   },
   methods: {
+    timerEvent(eventName) {
+      socket.emit(`timerEvent`, { roomId: this.roomId, eventName });
+    },
     castVote(value) {
       if (!this.isSpectator) {
         axios.post('/cast-vote', { roomId: this.roomId, username: this.playerName, value } ).then(() => {
