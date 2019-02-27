@@ -1,7 +1,6 @@
 <template>
   <main>
-    <div class="room-info">Room ID: <a href="#">{{ roomId }}</a></div>
-    <div class="room-info">Room Name: {{ roomName }} <i @click="updateRoom" class="fas fa-pencil-alt"></i></div>
+    <div class="room-info">Room Link: <input type="text" ref="inputCopyLink" :value="roomLink" readonly="true"/> <i @click="copyId" class="fas fa-copy"></i></div>
     <div class="player-info"><h2>{{ playerName }}</h2></div>
     <div class="story-info">
       <label>
@@ -15,7 +14,10 @@
       <button class="diagonal" @click="makeMeCrumbMaster"><i class="fas fa-crown"></i> I am the Crumb Master!</button>
     </div>
     <div class="story-clock">
-      Time: 00:12:34
+      Time: {{ timer }}
+      <i class="fas fa-stop" v-if="isTimerGoing" @click="toggleTimer"></i>
+      <i class="fas fa-play" v-else @click="toggleTimer"></i>
+      <i class="fas fa-trash-alt" @click="clearTimer"></i>
     </div>
     <div class="vote-options">
       <button
@@ -50,10 +52,13 @@ export default {
     return {
       isCrumbMaster: false,
       isSpectator: false,
+      isTimerGoing: false,
       playerId: '7',
       playerName: '',
+      roomLink: '',
       roomName: '',
       showVotes: false,
+      timer: '00:00:00',
       voteOptions: [
         {
           text: '0 points',
@@ -121,6 +126,7 @@ export default {
 
     const name = this.getUsername();
     this.playerName = name;
+    this.roomLink = `${window.location.origin}/#${this.$route.path}`;
 
     socket.on(`room updated ${this.roomId}`, newRoomData => {
       console.log('The room just updated', newRoomData);
@@ -149,6 +155,9 @@ export default {
         });
       }
     },
+    clearTimer() {
+
+    },
     clearVotes() {
       Object.keys(this.votes).forEach((key) => {
         if (this.votes.hasOwnProperty(key)) {
@@ -158,12 +167,23 @@ export default {
         }
       });
     },
+    copyId() {
+      this.$refs.inputCopyLink.select();
+      try {
+        document.execCommand('copy');
+      } catch (err) {
+        alert('You are using a bad browser. Stop that');
+      }
+    },
     makeMeCrumbMaster() {
       this.isCrumbMaster = true;
     },
     toggleShowVotes() {
       // this.showVotes = !this.showVotes;
       socket.emit('show vote change', { roomId: this.roomId, votesAreShown: !this.showVotes });
+    },
+    toggleTimer() {
+
     },
     joinRoom() {
       // TODO: If someone goes direct to a link with no room name - do we set a random one?
