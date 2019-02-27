@@ -15,8 +15,8 @@
     </div>
     <div class="story-clock">
       Time: {{ timer }}
-      <i class="fas fa-stop" v-if="isTimerGoing" @click="toggleTimer"></i>
-      <i class="fas fa-play" v-else @click="toggleTimer"></i>
+      <i class="fas fa-stop" v-if="isTimerGoing" @click="stopTimer"></i>
+      <i class="fas fa-play" v-else @click="startTimer"></i>
       <i class="fas fa-trash-alt" @click="clearTimer"></i>
     </div>
     <div class="vote-options">
@@ -57,8 +57,10 @@ export default {
       playerName: '',
       roomLink: '',
       roomName: '',
+      seconds: 0,
       showVotes: false,
-      timer: '00:00:00',
+      timer: '0:0:0',
+      timerInterval: () => {},
       voteOptions: [
         {
           text: '0 points',
@@ -156,7 +158,11 @@ export default {
       }
     },
     clearTimer() {
-
+      // TODO: put this on a socket
+      this.timer = '0:0:0';
+      this.seconds = 0;
+      this.isTimerGoing = false;
+      clearInterval(this.timerInterval);
     },
     clearVotes() {
       Object.keys(this.votes).forEach((key) => {
@@ -182,8 +188,22 @@ export default {
       // this.showVotes = !this.showVotes;
       socket.emit('show vote change', { roomId: this.roomId, votesAreShown: !this.showVotes });
     },
-    toggleTimer() {
+    startTimer() {
+      // TODO: put this on a socket
+      this.isTimerGoing = true;
+      this.timerInterval =  setInterval(() => {
+        this.seconds ++;
 
+        const hours   = Math.floor(this.seconds / 3600);
+        const minutes = Math.floor((this.seconds - (hours * 3600)) / 60);
+        const displaySeconds = this.seconds - (hours * 3600) - (minutes * 60);
+        this.timer = `${hours}:${minutes}:${displaySeconds}`;
+      }, 1000);
+    },
+    stopTimer() {
+      // TODO: put this on a socket
+      this.isTimerGoing = false;
+      clearInterval(this.timerInterval);
     },
     joinRoom() {
       // TODO: If someone goes direct to a link with no room name - do we set a random one?
