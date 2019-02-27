@@ -1,6 +1,12 @@
 @import url('https://fonts.googleapis.com/css?family=Ubuntu+Mono');
-@import '~bootstrap/scss/bootstrap-grid';
 @import '~@fortawesome/fontawesome-free/css/all.css';
+
+@import '~bootstrap/scss/bootstrap-grid';
+// Media queries
+@import "~bootstrap/scss/_functions.scss";
+@import "~bootstrap/scss/_variables.scss";
+@import "~bootstrap/scss/mixins/_breakpoints.scss";
+
 
 @import './_variables.scss';
 @import './_global.scss';

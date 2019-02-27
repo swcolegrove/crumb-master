@@ -49,12 +49,24 @@ export default {
 
 <style lang="scss">
   .modal {
-    position: relative;
-    margin: 0 auto;
-    min-width: 60%;
-    min-height: 100px;
+    position: fixed;
     z-index: $z-index-modal;
     padding: 1rem;
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+
+    @include media-breakpoint-up(md) {
+      min-width: 60%;
+      min-height: 100px;
+      left: 50%;
+      top: 50%;
+      margin-left: -30%;
+      margin-top: -10%;
+      bottom: unset;
+      right: unset;
+    }
   }
 
   .dark .modal {
