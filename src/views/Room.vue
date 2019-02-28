@@ -90,6 +90,11 @@ export default {
     socket.on(`room:${this.roomId}:showVotes change`, ({ votesAreShown }) => {
       this.showVotes = votesAreShown;
     });
+
+    socket.on(`room story ${this.roomId}`, ({ story }) => {
+      this.storyText = story;
+      // TODO: Is this triggering the watcher again?
+    });
   },
   computed: {
     roomId() {
