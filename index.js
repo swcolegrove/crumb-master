@@ -151,13 +151,19 @@ redisLib.connectToClient().then(res => {
       const { roomId, eventName } = msg;
       io.emit(`room:${roomId}:timerEvent`, eventName);
     });
-    
+
     socket.on('room story update', ({ roomId, story }) => {
       if (roomId && !utils.isNullOrUndefined(story)) {
         io.emit(`room story ${roomId}`, { story });
       } else {
         consoleMsg('Required room story update data not present');
       }
+    });
+
+    socket.on('lock votes', (msg) => {
+      // TODO: Should probably store this in redis
+      const { roomId, isLocked } = msg;
+      io.emit(`room:${roomId}:setLock`, isLocked);
     });
   });
 });
