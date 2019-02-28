@@ -28,8 +28,9 @@
 
 <script>
 import components from './components';
-import { isNullOrUndefined, toBoolean } from './util/utils.js';
 import { EventBus } from './util/EventBus.js';
+import utils from './util/utils.js';
+const { isNullOrUndefined, toBoolean } = utils;
 
 export default {
   name: 'app',

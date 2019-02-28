@@ -39,6 +39,7 @@ import io from 'socket.io-client';
 import voteOptions from '../defaultVoteOptions';
 import UserSession from '../mixins/UserSession.js';
 import axios from 'axios';
+import * as debounce from 'lodash/debounce'
 
 const socket = io();
 
@@ -132,16 +133,16 @@ export default {
         alert('You are using a bad browser. Stop that');
       }
     },
-    debounceStorySyncing: _.debounce(function debounceStorySyncing() {
+    debounceStorySyncing: debounce(function debounceStorySyncing() {
       this.storyTextIsDirty = false;
       socket.emit('room story update', { roomId: this.roomId, story: this.storyText });
-    }),
+    }, 200),
     makeMeCrumbMaster() {
       this.isCrumbMaster = true;
     },
     toggleShowVotes() {
-      // this.showVotes = !this.showVotes;
-      socket.emit('show vote change', { roomId: this.roomId, votesAreShown: !this.showVotes });
+      this.showVotes = !this.showVotes;
+      axios.post('/show-votes', { roomId: this.roomId, username: this.playerName, votesAreShown: this.showVotes });
     },
     joinRoom() {
       // TODO: If someone goes direct to a link with no room name - do we set a random one?
