@@ -10,11 +10,18 @@
     </div>
     <div class="vote-controls">
       <button class="glow" @click="clearVotes">Clear Votes</button>
-      <button class="fill" @click="toggleShowVotes()">Show Votes</button>
+      <button class="fill" @click="toggleShowVotes()"> {{ !showVotes ? 'Show Votes' : 'Hide Votes' }}</button>
       <button class="diagonal" @click="makeMeCrumbMaster"><i class="fas fa-crown"></i> I am the Crumb Master!</button>
     </div>
 
-    <timer :room-id="roomId"></timer>
+    <div class="row">
+      <div class="col-6">
+        <timer :room-id="roomId"></timer>
+      </div>
+      <div class="col-6">
+        <lock-box text="Lock Votes" v-model="isLocked" :checked="isLocked" :click-event="lockVotes"></lock-box>
+      </div>
+    </div>
 
     <div class="vote-options">
       <button
@@ -49,6 +56,7 @@ export default {
     return {
       isCrumbMaster: false,
       isSpectator: false,
+      isLocked: false,
       playerId: '7',
       playerName: '',
       roomLink: '',
@@ -124,7 +132,6 @@ export default {
     this.roomLink = `${window.location.origin}/#${this.$route.path}`;
 
     socket.on(`room:${this.roomId}:changed`, newRoomData => {
-      console.log('The room just updated', newRoomData);
       this.roomName = newRoomData['room-name'];
       delete newRoomData['room-name'];
       this.votes = Object.entries(newRoomData).map(([ playerName, value ]) => ({
@@ -166,6 +173,9 @@ export default {
       } catch (err) {
         alert('You are using a bad browser. Stop that');
       }
+    },
+    lockVotes() {
+      console.log(this.isLocked);
     },
     makeMeCrumbMaster() {
       this.isCrumbMaster = true;
@@ -209,7 +219,6 @@ export default {
 .vote-options {
   padding-right: 0;
   padding-bottom: 0;
-  width: 50%;
 
   .btn-vote {
     display: inline-block;
