@@ -9,7 +9,11 @@
     <tbody>
       <tr v-for="vote in votes" :key="vote.playerName">
         <td>{{ vote.playerName }}</td>
-        <td :class="{ 'hide-vote': !showVotes }">{{ showVotes ? vote.value || '-' : '-' }}</td>
+        <td :class="{ 'hide-vote': !showVotes }">
+          <transition name="flash" mode="out-in">
+            <div :key="vote.value">{{ showVotes ? vote.value || '-' : '-' }}</div>
+          </transition>
+        </td>
       </tr>
     </tbody>
   </table>
@@ -36,5 +40,39 @@ export default {
   .hide-vote {
     background: #000;
   }
+}
+
+.flash-enter-active {
+  transition: all .3s ease;
+}
+.flash-leave-active {
+  transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.flash-enter, .flash-leave-to {
+  transform: translateX(10px);
+  opacity: 0;
+}
+
+.flash-enter-active {
+  background-color: $ui-color-action;
+  -webkit-animation: flash linear .3s infinite;
+  animation: flash linear .3s infinite;
+}
+
+.flash-leave-active {
+  background-color: $ui-color-action;
+  -webkit-animation: flash linear .3s infinite;
+  animation: flash linear .3s infinite;
+}
+
+@-webkit-keyframes flash-in {
+  0% { opacity: 1; }
+  50% { opacity: .1; }
+  100% { opacity: 1; }
+}
+@keyframes flash-in {
+  0% { opacity: 1; }
+  50% { opacity: .1; }
+  100% { opacity: 1; }
 }
 </style>
