@@ -97,9 +97,26 @@ app.post('/cast-vote', (req, res) => {
 redisLib.connectToClient().then(res => {
   io.on('connection', (socket) => {
     consoleMsg('a user connected');
+    const connectionInfo = {
+      socketId: socket.id,
+      username: '',
+      roomId: '',
+    };
 
     socket.on('disconnect', () => {
-      consoleMsg('user disconnected');
+      const { roomId, username } = connectionInfo;
+      if (roomId) {
+        redisLib.leaveRoom({ roomId, username }).then((roomData) => {
+          io.emit(`room:${roomId}:changed`, roomData);
+        }).catch((err) => {
+          console.log(`Error leaving room: ${err}`);
+        })
+      }
+    });
+
+    socket.on('room:joined', (userData) => {
+      connectionInfo.username = userData.username;
+      connectionInfo.roomId = userData.roomId;
     });
 
     socket.on('show vote change', ({ roomId, votesAreShown }) => {
@@ -111,7 +128,9 @@ redisLib.connectToClient().then(res => {
       const { roomId } = msg;
       redisLib.getRoomData({ roomId }).then(roomData => {
         io.emit(`room:${roomId}:changed`, roomData);
-      }, consoleMsg);
+      }).catch((err) => {
+        res.status(500).send({ message: `Room update error: ${err}`});
+      });
     });
 
     socket.on('timerEvent', (msg) => {
