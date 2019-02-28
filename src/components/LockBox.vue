@@ -1,6 +1,6 @@
 <template>
   <div class="lock-box">
-    <input type="checkbox" id="lock" :checked="checked" />
+    <input type="checkbox" id="lock" :checked="checked" @change="changeEvent" v-on:input="$emit('input', $event.target.checked)" />
     <label for="lock"><i></i></label>
     {{ text }}
   </div>
@@ -16,6 +16,9 @@ export default {
     checked: {
       type: Boolean,
       required: true,
+    },
+    changeEvent: {
+      type: Function,
     },
   }
 };

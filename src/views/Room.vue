@@ -19,7 +19,7 @@
         <timer :room-id="roomId"></timer>
       </div>
       <div class="col-6">
-        <lock-box text="Lock Votes" v-model="isLocked" :checked="isLocked" :click-event="lockVotes"></lock-box>
+        <lock-box text="Lock Votes" v-model="isLocked" :checked="isLocked" :change-event="setVotingLock"></lock-box>
       </div>
     </div>
 
@@ -29,6 +29,7 @@
         v-for="(voteOption, idx) in voteOptions"
         :key="idx"
         @click="castVote(voteOption.value)"
+        :disabled="isLocked"
       >{{ voteOption.text }}</button>
     </div>
     <div class="vote-area">
@@ -142,6 +143,13 @@ export default {
 
     socket.on(`room:${this.roomId}:showVotes change`, ({ votesAreShown }) => {
       this.showVotes = votesAreShown;
+      if (votesAreShown) {
+        this.isLocked = true;
+      }
+    });
+
+    socket.on(`room:${this.roomId}:setLock`, (isLocked) => {
+      this.isLocked = isLocked;
     });
   },
   computed: {
@@ -158,6 +166,9 @@ export default {
       }
     },
     clearVotes() {
+      this.isLocked = false;
+      this.setVotingLock();
+
       Object.keys(this.votes).forEach((key) => {
         if (this.votes.hasOwnProperty(key)) {
           // I'm worried about them not getting garbage collected
@@ -174,8 +185,8 @@ export default {
         alert('You are using a bad browser. Stop that');
       }
     },
-    lockVotes() {
-      console.log(this.isLocked);
+    setVotingLock() {
+      socket.emit(`lock votes`, { isLocked: this.isLocked, roomId: this.roomId });
     },
     makeMeCrumbMaster() {
       this.isCrumbMaster = true;

@@ -137,6 +137,12 @@ redisLib.connectToClient().then(res => {
       const { roomId, eventName } = msg;
       io.emit(`room:${roomId}:timerEvent`, eventName);
     });
+
+    socket.on('lock votes', (msg) => {
+      // TODO: Should probably store this in redis
+      const { roomId, isLocked } = msg;
+      io.emit(`room:${roomId}:setLock`, isLocked);
+    });
   });
 });
 
