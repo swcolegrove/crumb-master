@@ -84,7 +84,7 @@ app.post('/update-room-name', (req, res) => {
 app.post('/cast-vote', (req, res) => {
   const { roomId, username, value } = req.body;
   if (roomId && username && value) {
-    redisLib.addVoteToRoom({ roomId, username, vote: value }).then(roomData => {
+    redisLib.addVoteToRoom({ roomId, username, vote: value }).then(() => {
       res.send({ status: 200, message: 'Vote cast'});
     }).catch((err) => {
       res.status(500).send({ message: `Room vote error: ${err}`});

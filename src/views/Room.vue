@@ -221,13 +221,15 @@ export default {
     joinRoom() {
       // TODO: If someone goes direct to a link with no room name - do we set a random one?
       const username = this.getUsername();
-      this.playerName = username;
-      const roomId = this.roomId;
-      axios.post('/join-room', { username, roomId } ).then((response) => {
-        this.setPastRoom(roomId, response.data.roomData['room-name']);
-        socket.emit('room:joined', { username, roomId });
-        socket.emit('room:update', { roomId: this.roomId });
-      });
+      if (username) {
+        this.playerName = username;
+        const roomId = this.roomId;
+        axios.post('/join-room', { username, roomId } ).then((response) => {
+          this.setPastRoom(roomId, response.data.roomData['room-name']);
+          socket.emit('room:joined', { username, roomId });
+          socket.emit('room:update', { roomId: this.roomId });
+        });
+      }
     },
     updateRoom() {
       axios.post('/update-room-name', { roomId: this.roomId, roomName: this.roomName}).then(() => {
