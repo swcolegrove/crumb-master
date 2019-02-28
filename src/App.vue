@@ -6,7 +6,7 @@
       <button class="fill" @click="showModal('settings')"><i class="fas fa-cog"></i></button>
     </header>
 
-    <div class="view-wrapper">
+    <div class="view-wrapper container">
       <router-view></router-view>
     </div>
 
