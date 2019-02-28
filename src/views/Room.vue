@@ -13,12 +13,9 @@
       <button class="fill" @click="toggleShowVotes()">Show Votes</button>
       <button class="diagonal" @click="makeMeCrumbMaster"><i class="fas fa-crown"></i> I am the Crumb Master!</button>
     </div>
-    <div class="story-clock">
-      Time: {{ timer }}
-      <i class="fas fa-stop" v-if="isTimerGoing" @click="timerEvent('stop')"></i>
-      <i class="fas fa-play" v-else @click="timerEvent('start')"></i>
-      <i class="fas fa-trash-alt" @click="timerEvent('clear')"></i>
-    </div>
+
+    <timer :room-id="roomId"></timer>
+
     <div class="vote-options">
       <button
         class="btn-vote diagonal"
@@ -52,15 +49,11 @@ export default {
     return {
       isCrumbMaster: false,
       isSpectator: false,
-      isTimerGoing: false,
       playerId: '7',
       playerName: '',
       roomLink: '',
       roomName: '',
-      seconds: 0,
       showVotes: false,
-      timer: '0:0:0',
-      timerInterval: () => {},
       voteOptions: [
         {
           text: '0 points',
@@ -143,16 +136,6 @@ export default {
     socket.on(`room:${this.roomId}:showVotes change`, ({ votesAreShown }) => {
       this.showVotes = votesAreShown;
     });
-
-    socket.on(`room:${this.roomId}:timerEvent`, eventName => {
-      if (eventName === 'start') {
-        this.startTimer();
-      } else if (eventName === 'stop') {
-        this.stopTimer();
-      } else if (eventName === 'clear') {
-        this.clearTimer();
-      }
-    });
   },
   computed: {
     roomId() {
@@ -160,22 +143,12 @@ export default {
     },
   },
   methods: {
-    timerEvent(eventName) {
-      socket.emit(`timerEvent`, { roomId: this.roomId, eventName });
-    },
     castVote(value) {
       if (!this.isSpectator) {
         axios.post('/cast-vote', { roomId: this.roomId, username: this.playerName, value } ).then(() => {
           socket.emit('room:update', { roomId: this.roomId });
         });
       }
-    },
-    clearTimer() {
-      // TODO: put this on a socket
-      this.timer = '0:0:0';
-      this.seconds = 0;
-      this.isTimerGoing = false;
-      clearInterval(this.timerInterval);
     },
     clearVotes() {
       Object.keys(this.votes).forEach((key) => {
@@ -200,23 +173,6 @@ export default {
     toggleShowVotes() {
       // this.showVotes = !this.showVotes;
       socket.emit('show vote change', { roomId: this.roomId, votesAreShown: !this.showVotes });
-    },
-    startTimer() {
-      // TODO: put this on a socket
-      this.isTimerGoing = true;
-      this.timerInterval =  setInterval(() => {
-        this.seconds ++;
-
-        const hours   = Math.floor(this.seconds / 3600);
-        const minutes = Math.floor((this.seconds - (hours * 3600)) / 60);
-        const displaySeconds = this.seconds - (hours * 3600) - (minutes * 60);
-        this.timer = `${hours}:${minutes}:${displaySeconds}`;
-      }, 1000);
-    },
-    stopTimer() {
-      // TODO: put this on a socket
-      this.isTimerGoing = false;
-      clearInterval(this.timerInterval);
     },
     joinRoom() {
       // TODO: If someone goes direct to a link with no room name - do we set a random one?
@@ -245,7 +201,6 @@ export default {
 .player-info,
 .story-info,
 .vote-controls,
-.story-clock,
 .vote-options,
 .vote-area {
   padding: $pad-unit;
