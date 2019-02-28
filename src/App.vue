@@ -23,6 +23,8 @@
       </div>
     </modal>
     <modal-backdrop></modal-backdrop>
+
+    <footer>Made by <a href="https://github.com/djragsdale">@djragsdale</a> & <a href="https://github.com/swcolegrove">@swcolegrove</a></footer>
   </div>
 </template>
 
@@ -99,5 +101,6 @@ export default {
   .view-wrapper {
     width: 100%;
     overflow: auto;
+    flex: 1;
   }
 </style>
