@@ -105,6 +105,7 @@ export default {
 
     socket.on(`room:${this.roomId}:clearVotes`, () => {
       this.isLocked = false;
+      this.showVotes = false;
       this.setVotingLock();
 
       this.votes.forEach((vote) => {

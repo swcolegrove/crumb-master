@@ -98,3 +98,8 @@ button .fas {
   margin: 0;
   color: inherit;
 }
+
+button:disabled {
+  opacity: .5;
+  pointer-events: none;
+}
