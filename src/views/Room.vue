@@ -48,6 +48,7 @@ import voteOptions from '../defaultVoteOptions';
 import UserSession from '../mixins/UserSession.js';
 import axios from 'axios';
 import * as debounce from 'lodash/debounce'
+import { toBoolean } from '../util/utils.js';
 
 const socket = io();
 
@@ -85,6 +86,8 @@ export default {
 
     const reservedKeys = [
       'room-name',
+      'show-votes',
+      'is-locked',
     ];
 
     const name = this.getUsername();
@@ -93,7 +96,9 @@ export default {
 
     socket.on(`room:${this.roomId}:changed`, newRoomData => {
       this.roomName = newRoomData['room-name'];
-      // delete newRoomData['room-name'];
+      this.showVotes = toBoolean(newRoomData['show-votes']);
+      this.isLocked = toBoolean(newRoomData['is-locked']);
+
       reservedKeys.forEach((key) => {
         delete newRoomData[key];
       });
@@ -105,19 +110,12 @@ export default {
 
     socket.on(`room:${this.roomId}:clearVotes`, () => {
       this.isLocked = false;
-      this.showVotes = false;
+      this.toggleShowVotes();
       this.setVotingLock();
 
       this.votes.forEach((vote) => {
         vote.value = '-';
       });
-    });
-
-    socket.on(`room:${this.roomId}:showVotes change`, ({ votesAreShown }) => {
-      this.showVotes = votesAreShown;
-      if (votesAreShown) {
-        this.isLocked = true;
-      }
     });
 
     socket.on(`room:${this.roomId}:setLock`, (isLocked) => {
@@ -165,14 +163,23 @@ export default {
       socket.emit('room story update', { roomId: this.roomId, story: this.storyText });
     }, 200),
     setVotingLock() {
-      socket.emit(`lock votes`, { isLocked: this.isLocked, roomId: this.roomId });
+      axios.post('set-lock', { roomId: this.roomId, isLocked: this.isLocked }).then(() => {
+        socket.emit('room:update', { roomId: this.roomId });
+      });
     },
     makeMeCrumbMaster() {
       this.isCrumbMaster = true;
     },
     toggleShowVotes() {
-      this.showVotes = !this.showVotes;
-      axios.post('/show-votes', { roomId: this.roomId, username: this.playerName, votesAreShown: this.showVotes });
+      const shouldShow = !this.showVotes;
+
+      if (shouldShow) {
+        this.isLocked = true;
+        this.setVotingLock();
+      }
+      axios.post('set-vote-visibility', { roomId: this.roomId, showVotes: shouldShow }).then(() => {
+        socket.emit('room:update', { roomId: this.roomId });
+      });
     },
     joinRoom() {
       // TODO: If someone goes direct to a link with no room name - do we set a random one?

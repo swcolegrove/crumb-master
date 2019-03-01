@@ -95,6 +95,32 @@ app.post('/cast-vote', (req, res) => {
   }
 });
 
+app.post('/set-vote-visibility', (req, res) => {
+  const { roomId, showVotes } = req.body;
+  if (roomId && typeof utils.toBoolean(showVotes) === 'boolean') {
+    redisLib.addVoteToRoom({ roomId, username: 'show-votes', vote: showVotes }).then(() => {
+      res.send({ status: 200, message: 'Vote visibility set'});
+    }).catch((err) => {
+      res.status(500).send({ message: `Room vote visibility error: ${err}`});
+    });
+  } else {
+    res.status(400).send({ message: `Required data not present`});
+  }
+});
+
+app.post('/set-lock', (req, res) => {
+  const { roomId, isLocked } = req.body;
+  if (roomId && typeof utils.toBoolean(isLocked) === 'boolean') {
+    redisLib.addVoteToRoom({ roomId, username: 'is-locked', vote: isLocked }).then(() => {
+      res.send({ status: 200, message: 'Vote lock set'});
+    }).catch((err) => {
+      res.status(500).send({ message: `Room lock error: ${err}`});
+    });
+  } else {
+    res.status(400).send({ message: `Required data not present`});
+  }
+});
+
 redisLib.connectToClient().then(res => {
   io.on('connection', (socket) => {
     consoleMsg('a user connected');
@@ -119,17 +145,6 @@ redisLib.connectToClient().then(res => {
       // Won't this set it for everybody?
       connectionInfo.username = userData.username;
       connectionInfo.roomId = userData.roomId;
-    });
-
-    app.post('/show-votes', (req, res) => {
-      const { roomId, username, votesAreShown } = req.body;
-      consoleMsg('show vote post', roomId, username, votesAreShown);
-      if (roomId && username) {
-        io.emit(`room:${roomId}:showVotes change`, { votesAreShown });
-        res.send({ status: 200, votesAreShown });
-      } else {
-        res.status(400).send({ message: `Required data not present`});
-      }
     });
 
     app.post('/clear-votes', (req, res) => {
@@ -171,12 +186,6 @@ redisLib.connectToClient().then(res => {
       } else {
         consoleMsg('Required room story update data not present');
       }
-    });
-
-    socket.on('lock votes', (msg) => {
-      // TODO: Should probably store this in redis
-      const { roomId, isLocked } = msg;
-      io.emit(`room:${roomId}:setLock`, isLocked);
     });
   });
 });
