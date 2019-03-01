@@ -55,10 +55,7 @@ app.post('/join-room', (req, res) => {
   };
   redisLib.joinRoom(room).then((roomData) => {
 
-    res.send({ status: 200, roomData: {
-      ...roomData,
-      storyText: roomData['story-text'],
-    }});
+    res.send({ status: 200, roomData });
   }).catch((err) => {
     res.status(500).send({ message: `Error joining room: ${err}`});
   });

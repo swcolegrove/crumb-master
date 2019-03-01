@@ -84,26 +84,16 @@ export default {
   mounted() {
     this.joinRoom();
 
-    const reservedKeys = [
-      'room-name',
-      'show-votes',
-      'is-locked',
-      'story-text',
-    ];
-
     const name = this.getUsername();
     this.playerName = name;
     this.roomLink = `${window.location.origin}/#${this.$route.path}`;
 
     socket.on(`room:${this.roomId}:changed`, newRoomData => {
-      this.roomName = newRoomData['room-name'];
-      this.showVotes = toBoolean(newRoomData['show-votes']);
-      this.isLocked = toBoolean(newRoomData['is-locked']);
+      this.roomName = newRoomData.roomName;
+      this.showVotes = toBoolean(newRoomData.showVotes);
+      this.isLocked = toBoolean(newRoomData.isLocked);
 
-      reservedKeys.forEach((key) => {
-        delete newRoomData[key];
-      });
-      this.votes = Object.entries(newRoomData).map(([ playerName, value ]) => ({
+      this.votes = Object.entries(newRoomData.votes).map(([ playerName, value ]) => ({
         playerName,
         value,
       }));
