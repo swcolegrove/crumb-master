@@ -11,7 +11,7 @@
     <div class="vote-controls">
       <button class="glow" @click="clearVotes">Clear Votes</button>
       <button class="fill" @click="toggleShowVotes()"> {{ !showVotes ? 'Show Votes' : 'Hide Votes' }}</button>
-      <button class="diagonal" @click="makeMeCrumbMaster"><i class="fas fa-crown"></i> I am the Crumb Master!</button>
+      <!-- <button class="diagonal" @click="makeMeCrumbMaster"><i class="fas fa-crown"></i> I am the Crumb Master!</button> -->
     </div>
 
     <div class="row">
@@ -99,15 +99,6 @@ export default {
       }));
     });
 
-    socket.on(`room:${this.roomId}:clearVotes`, () => {
-      this.isLocked = false;
-      this.toggleShowVotes();
-      this.setVotingLock();
-
-      this.votes.forEach((vote) => {
-        vote.value = '-';
-      });
-    });
 
     socket.on(`room:${this.roomId}:setLock`, (isLocked) => {
       this.isLocked = isLocked;
@@ -138,8 +129,9 @@ export default {
       }
     },
     clearVotes() {
-      this.isLocked = false;
-      axios.post('/clear-votes', { roomId: this.roomId, username: this.playerName });
+      axios.post('/clear-votes', { roomId: this.roomId, username: this.playerName }).then(() => {
+        socket.emit('room:update', { roomId: this.roomId });
+      });
     },
     copyId() {
       this.$refs.inputCopyLink.select();

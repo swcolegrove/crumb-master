@@ -122,6 +122,17 @@ app.post('/set-lock', (req, res) => {
   }
 });
 
+app.post('/clear-votes', (req, res) => {
+  const { roomId, username } = req.body;
+  if (roomId, username) {
+    redisLib.clearVotes({ roomId, username }).then(() => {
+      res.status(200).send({ status: 200 });
+    });
+  } else {
+    res.status(400).send({ message: 'Required data not present' });
+  }
+});
+
 redisLib.connectToClient().then(res => {
   io.on('connection', (socket) => {
     consoleMsg('a user connected');
@@ -148,19 +159,6 @@ redisLib.connectToClient().then(res => {
       connectionInfo.roomId = userData.roomId;
     });
 
-    app.post('/clear-votes', (req, res) => {
-      const { roomId, username } = req.body;
-      if (roomId, username) {
-        redisLib.clearVotes({ roomId, username }).then((roomData) => {
-          consoleMsg('clearVote data', roomData);
-        });
-        io.emit(`room:${roomId}:clearVotes`);
-        res.status(200).send({ status: 200 });
-      } else {
-        res.status(400).send({ message: 'Required data not present' });
-      }
-    });
-
     socket.on('show vote change', ({ roomId, votesAreShown }) => {
       consoleMsg('show vote socket', votesAreShown);
       io.emit(`room:${roomId}:showVotes change`, { votesAreShown });
@@ -171,7 +169,6 @@ redisLib.connectToClient().then(res => {
       redisLib.getRoomData({ roomId }).then(roomData => {
         io.emit(`room:${roomId}:changed`, roomData);
       }).catch((err) => {
-        // res.status(500).send({ message: `Room update error: ${err}`});
         consoleMsg(`Room update error: ${err}`);
       });
     });
