@@ -11,7 +11,7 @@
         <td>{{ vote.playerName }}</td>
         <td :class="{ 'hide-vote': !showVotes }">
           <transition name="flash" mode="out-in">
-            <div :key="vote.value">{{ showVotes ? vote.value || '-' : '-' }}</div>
+            <div :key="vote.value">{{ showVotes ? vote.value || '-' : (vote.value === '-') ? '-' : '✓' }}</div>
           </transition>
         </td>
       </tr>

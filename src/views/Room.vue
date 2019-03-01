@@ -83,17 +83,33 @@ export default {
   mounted() {
     this.joinRoom();
 
+    const reservedKeys = [
+      'room-name',
+    ];
+
     const name = this.getUsername();
     this.playerName = name;
     this.roomLink = `${window.location.origin}/#${this.$route.path}`;
 
     socket.on(`room:${this.roomId}:changed`, newRoomData => {
       this.roomName = newRoomData['room-name'];
-      delete newRoomData['room-name'];
+      // delete newRoomData['room-name'];
+      reservedKeys.forEach((key) => {
+        delete newRoomData[key];
+      });
       this.votes = Object.entries(newRoomData).map(([ playerName, value ]) => ({
         playerName,
         value,
       }));
+    });
+
+    socket.on(`room:${this.roomId}:clearVotes`, () => {
+      this.isLocked = false;
+      this.setVotingLock();
+
+      this.votes.forEach((vote) => {
+        vote.value = '-';
+      });
     });
 
     socket.on(`room:${this.roomId}:showVotes change`, ({ votesAreShown }) => {
@@ -133,15 +149,7 @@ export default {
     },
     clearVotes() {
       this.isLocked = false;
-      this.setVotingLock();
-
-      Object.keys(this.votes).forEach((key) => {
-        if (this.votes.hasOwnProperty(key)) {
-          // I'm worried about them not getting garbage collected
-          this.votes[key] = null;
-          delete this.votes[key];
-        }
-      });
+      axios.post('/clear-votes', { roomId: this.roomId, username: this.playerName });
     },
     copyId() {
       this.$refs.inputCopyLink.select();

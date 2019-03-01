@@ -132,6 +132,19 @@ redisLib.connectToClient().then(res => {
       }
     });
 
+    app.post('/clear-votes', (req, res) => {
+      const { roomId, username } = req.body;
+      if (roomId, username) {
+        redisLib.clearVotes({ roomId, username }).then((roomData) => {
+          consoleMsg('clearVote data', roomData);
+        });
+        io.emit(`room:${roomId}:clearVotes`);
+        res.status(200).send({ status: 200 });
+      } else {
+        res.status(400).send({ message: 'Required data not present' });
+      }
+    });
+
     socket.on('show vote change', ({ roomId, votesAreShown }) => {
       consoleMsg('show vote socket', votesAreShown);
       io.emit(`room:${roomId}:showVotes change`, { votesAreShown });
