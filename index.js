@@ -54,7 +54,11 @@ app.post('/join-room', (req, res) => {
     vote: '-',
   };
   redisLib.joinRoom(room).then((roomData) => {
-    res.send({ status: 200, roomData });
+
+    res.send({ status: 200, roomData: {
+      ...roomData,
+      storyText: roomData['story-text'],
+    }});
   }).catch((err) => {
     res.status(500).send({ message: `Error joining room: ${err}`});
   });
@@ -180,9 +184,10 @@ redisLib.connectToClient().then(res => {
       io.emit(`room:${roomId}:timerEvent`, eventName);
     });
 
-    socket.on('room story update', ({ roomId, story }) => {
-      if (roomId && !utils.isNullOrUndefined(story)) {
-        io.emit(`room story ${roomId}`, { story });
+    socket.on('room story update', ({ roomId, storyText, username }) => {
+      if (roomId && !utils.isNullOrUndefined(storyText)) {
+        redisLib.updateStory({ roomId, storyText, username });
+        io.emit(`room story ${roomId}`, { storyText });
       } else {
         consoleMsg('Required room story update data not present');
       }

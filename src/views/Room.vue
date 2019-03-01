@@ -88,6 +88,7 @@ export default {
       'room-name',
       'show-votes',
       'is-locked',
+      'story-text',
     ];
 
     const name = this.getUsername();
@@ -122,8 +123,8 @@ export default {
       this.isLocked = isLocked;
     });
 
-    socket.on(`room story ${this.roomId}`, ({ story }) => {
-      this.storyText = story;
+    socket.on(`room story ${this.roomId}`, ({ storyText }) => {
+      this.storyText = storyText;
       // TODO: Is this triggering the watcher again?
     });
   },
@@ -160,7 +161,7 @@ export default {
     },
     debounceStorySyncing: debounce(function debounceStorySyncing() {
       this.storyTextIsDirty = false;
-      socket.emit('room story update', { roomId: this.roomId, story: this.storyText });
+      socket.emit('room story update', { roomId: this.roomId, storyText: this.storyText });
     }, 500),
     setVotingLock() {
       axios.post('set-lock', { roomId: this.roomId, isLocked: this.isLocked }).then(() => {
@@ -189,6 +190,7 @@ export default {
         const roomId = this.roomId;
         axios.post('/join-room', { username, roomId } ).then((response) => {
           this.setPastRoom(roomId, response.data.roomData['room-name']);
+          this.storyText = response.data.roomData.storyText;
           socket.emit('room:joined', { username, roomId });
           socket.emit('room:update', { roomId: this.roomId });
         });
