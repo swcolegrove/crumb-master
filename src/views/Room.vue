@@ -161,7 +161,7 @@ export default {
     debounceStorySyncing: debounce(function debounceStorySyncing() {
       this.storyTextIsDirty = false;
       socket.emit('room story update', { roomId: this.roomId, story: this.storyText });
-    }, 200),
+    }, 500),
     setVotingLock() {
       axios.post('set-lock', { roomId: this.roomId, isLocked: this.isLocked }).then(() => {
         socket.emit('room:update', { roomId: this.roomId });
