@@ -171,7 +171,7 @@ export default {
         this.playerName = username;
         const roomId = this.roomId;
         axios.post('/join-room', { username, roomId } ).then((response) => {
-          this.setPastRoom(roomId, response.data.roomData['room-name']);
+          this.setPastRoom(roomId, response.data.roomData.roomName);
           this.storyText = response.data.roomData.storyText;
           socket.emit('room:joined', { username, roomId });
           socket.emit('room:update', { roomId: this.roomId });
