@@ -13,7 +13,8 @@
     "heroku:init": "heroku git:remote -a crumb-master",
     "publish": "git push heroku master",
     "start": "node index.js",
-    "heroku-postbuild": "npm run build"
+    "heroku-postbuild": "npm run build",
+    "clean-redis": "node bin/cleanRedis.js"
   },
   "dependencies": {
     "axios": "^0.18.0",

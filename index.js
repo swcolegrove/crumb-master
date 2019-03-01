@@ -20,13 +20,13 @@ app.use(serveStatic(path.join(__dirname, 'dist')));
 // eslint-disable-next-line
 const consoleMsg = (...msg) => console.log(...msg);
 
-app.post('/destroy', (req, res) => {
-  redisLib.flushKeys().then(() => {
-    res.send({ status: 200, message: 'Its all gone' });
-  }).catch((err) => {
-    res.status(500).send({ message: `Error flushing redis: ${err}`});
-  });
-});
+// app.post('/destroy', (req, res) => {
+//   redisLib.flushKeys().then(() => {
+//     res.send({ status: 200, message: 'Its all gone' });
+//   }).catch((err) => {
+//     res.status(500).send({ message: `Error flushing redis: ${err}`});
+//   });
+// });
 
 app.post('/create-room', (req, res) => {
   // 1. create room uuid & use as redis hash key
