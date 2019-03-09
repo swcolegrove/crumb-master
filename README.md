@@ -21,3 +21,4 @@ agile planning poker
 - Validate users only affecting a room they're in (can't show votes in another room)
 - Set/ edit a room name. Does it persist after redis wipe or get re created when someone re joins the room?
 - Validate / sanitize api calls
+- Auto-show votes when all votes are in

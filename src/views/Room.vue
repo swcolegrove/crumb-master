@@ -123,8 +123,16 @@ export default {
   methods: {
     castVote(value) {
       if (!this.isSpectator) {
-        axios.post('/cast-vote', { roomId: this.roomId, username: this.playerName, value } ).then(() => {
+        axios.post('/cast-vote', { roomId: this.roomId, username: this.playerName, value }).then(() => {
           socket.emit('room:update', { roomId: this.roomId });
+          if (
+            !this.showVotes &&
+            !this.votes
+              .filter(({ playerName }) => playerName !== this.playerName)
+              .some(({ value }) => value === '-')
+          ) {
+            this.toggleShowVotes();
+          }
         });
       }
     },
