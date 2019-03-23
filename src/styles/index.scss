@@ -8,6 +8,7 @@
 @import "~bootstrap/scss/mixins/_breakpoints.scss";
 
 
-@import './_variables.scss';
-@import './_global.scss';
+@import 'variables';
+@import 'global';
+@import 'theme';
 @import './button.scss';

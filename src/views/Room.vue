@@ -1,6 +1,6 @@
 <template>
   <main>
-    <div class="room-info">Room Link: <input type="text" ref="inputCopyLink" :value="roomLink" readonly="true"/> <i @click="copyId" class="fas fa-copy"></i></div>
+    <div class="room-info">Room Link: <input type="text" ref="inputCopyLink" :value="roomLink" readonly="true"/> <i @click="copyId" class="fas fa-copy btn-icon"></i></div>
     <div class="player-info"><h2>{{ playerName }}</h2></div>
     <div class="story-info">
       <label>
@@ -49,6 +49,7 @@ import UserSession from '../mixins/UserSession.js';
 import axios from 'axios';
 import * as debounce from 'lodash/debounce'
 import { toBoolean } from '../util/utils.js';
+import { EventBus } from '../util/EventBus.js';
 
 const socket = io();
 
@@ -107,6 +108,10 @@ export default {
     socket.on(`room story ${this.roomId}`, ({ storyText }) => {
       this.storyText = storyText;
       // TODO: Is this triggering the watcher again?
+    });
+
+    EventBus.$on('username:change', () => {
+      this.$router.go();
     });
   },
   computed: {
@@ -218,11 +223,6 @@ export default {
 
 .vote-controls button {
   margin-bottom: $pad-unit;
-}
-
-i {
-  margin-left: 1rem;
-  cursor: pointer;
 }
 
 label {

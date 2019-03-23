@@ -12,13 +12,18 @@
 
     <modal name="settings" heading="Settings">
       <div class="row">
-        <div class="col-12">
+        <div class="col-12 mb-4">
           <p>Spooky Mode:</p>
           <toggle
             v-model="isSpooky"
             :checked="isSpooky"
             >
           </toggle>
+        </div>
+        <div class="col-12">
+          <p>Username:</p>
+          <input v-model="username" />
+          <i @click="setName" class="fas fa-save btn-icon" title="save"></i>
         </div>
       </div>
     </modal>
@@ -29,6 +34,7 @@
 </template>
 
 <script>
+import UserSession from './mixins/UserSession.js';
 import components from './components';
 import { EventBus } from './util/EventBus.js';
 import utils from './util/utils.js';
@@ -36,10 +42,12 @@ const { isNullOrUndefined, toBoolean } = utils;
 
 export default {
   name: 'app',
+  mixins: [UserSession],
   components,
   data() {
     return {
       isSpooky: true,
+      username: '',
     };
   },
   methods: {
@@ -60,10 +68,16 @@ export default {
     },
     showModal(modalName) {
       EventBus.$emit('showModal', modalName);
-    }
+    },
+    setName() {
+      this.setUsername(this.username);
+      EventBus.$emit('username:change');
+    },
   },
   mounted() {
     this.getSpooky();
+
+    this.username = this.getUsername();
 
     EventBus.$on('theme:change', isSpooky => {
       this.setTheme(isSpooky);

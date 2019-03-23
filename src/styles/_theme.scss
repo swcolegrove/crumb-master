@@ -1,0 +1,17 @@
+#app.dark {
+  input,
+  select,
+  textarea {
+    background: $dark-theme-bg-primary;
+    color: $dark-theme-text-color;
+  }
+}
+
+#app.light {
+  input,
+  select,
+  textarea {
+    background: $light-theme-bg-primary;
+    color: $light-theme-text-color;
+  }
+}
