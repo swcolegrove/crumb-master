@@ -1,5 +1,6 @@
 <template>
-  <div id="app" :class="getUiTheme()">
+  <div id="app" :class="[getUiTheme(), { pyro: asplode }]">
+    <div class="before"></div>
     <header>
       <router-link to="/"><img class="logo" src="./assets/crumb-master.png" /></router-link>
 
@@ -30,6 +31,7 @@
     <modal-backdrop></modal-backdrop>
 
     <footer>Made by <a href="https://github.com/djragsdale">@djragsdale</a> & <a href="https://github.com/swcolegrove">@swcolegrove</a></footer>
+    <div class="after"></div>
   </div>
 </template>
 
@@ -48,6 +50,7 @@ export default {
     return {
       isSpooky: true,
       username: '',
+      asplode: false,
     };
   },
   methods: {
@@ -81,6 +84,21 @@ export default {
 
     EventBus.$on('theme:change', isSpooky => {
       this.setTheme(isSpooky);
+    });
+
+    EventBus.$on('pryo:asplode', () => {
+      this.asplode = true;
+    });
+
+    EventBus.$on('pryo:nosplode', () => {
+      this.asplode = false;
+    });
+
+    EventBus.$on('pyro:timed', milliseconds => {
+      EventBus.$emit('pyro:asplode');
+      setTimeout(() => {
+        EventBus.$emit('pyro:nosplode');
+      }, milliseconds);
     });
   },
 }
