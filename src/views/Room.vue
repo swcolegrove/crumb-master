@@ -143,16 +143,16 @@ export default {
               .some(({ value }) => value === '-')
           ) {
             this.toggleShowVotes();
-            this.checkForMatchedVotes('castVote');
+            // this.checkForMatchedVotes('castVote');
           }
         });
       }
     },
     checkForMatchedVotes(msg) {
       const voteValues = this.votes
-        .filter(({ playerName }) => playerName !== this.playerName)
-        .map(({ value }) => value)
-        .concat(value);
+        // .filter(({ playerName }) => playerName !== this.playerName)
+        .map(({ value }) => value);
+        // .concat(value);
       const uniqueVoteValues = [...new Set(voteValues)];
       if (uniqueVoteValues.length === 1 && uniqueVoteValues[0] !== '-') {
         console.log(msg, 'votes all match', uniqueVoteValues); // eslint-disable-line
