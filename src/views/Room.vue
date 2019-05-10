@@ -145,7 +145,9 @@ export default {
       }
     },
     checkForMatchedVotes() {
-      const voteValues = this.votes.map(({ value }) => value);
+      const voteValues = this.votes
+        .map(({ value }) => value)
+        .filter(value => value !== '?');
       const uniqueVoteValues = [...new Set(voteValues)];
       if (uniqueVoteValues.length === 1 && uniqueVoteValues[0] !== '-') {
         EventBus.$emit('pyro:timed', 2000);
