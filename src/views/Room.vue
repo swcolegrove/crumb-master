@@ -140,8 +140,9 @@ export default {
 
             const voteValues = this.votes
               .filter(({ playerName }) => playerName !== this.playerName)
-              .map(({ value }) => value);
-            const uniqueVoteValues = [value, ...new Set(voteValues)];
+              .map(({ value }) => value)
+              .concat(value);
+            const uniqueVoteValues = [...new Set(voteValues)];
             if (uniqueVoteValues.length === 1) {
               console.log('votes all match', uniqueVoteValues); // eslint-disable-line
               EventBus.$emit('pyro:timed', 2000);
