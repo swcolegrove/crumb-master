@@ -98,11 +98,17 @@ export default {
         playerName,
         value,
       }));
+
+      this.checkForMatchedVotes('room-changed');
     });
 
 
     socket.on(`room:${this.roomId}:setLock`, (isLocked) => {
       this.isLocked = isLocked;
+
+      if (isLocked) {
+        this.checkForMatchedVotes('setLock');
+      }
     });
 
     socket.on(`room story ${this.roomId}`, ({ storyText }) => {
@@ -137,20 +143,22 @@ export default {
               .some(({ value }) => value === '-')
           ) {
             this.toggleShowVotes();
-
-            const voteValues = this.votes
-              .filter(({ playerName }) => playerName !== this.playerName)
-              .map(({ value }) => value)
-              .concat(value);
-            const uniqueVoteValues = [...new Set(voteValues)];
-            if (uniqueVoteValues.length === 1) {
-              console.log('votes all match', uniqueVoteValues); // eslint-disable-line
-              EventBus.$emit('pyro:timed', 2000);
-            } else {
-              console.log('vote mismatch', uniqueVoteValues); // eslint-disable-line
-            }
+            this.checkForMatchedVotes('castVote');
           }
         });
+      }
+    },
+    checkForMatchedVotes(msg) {
+      const voteValues = this.votes
+        .filter(({ playerName }) => playerName !== this.playerName)
+        .map(({ value }) => value)
+        .concat(value);
+      const uniqueVoteValues = [...new Set(voteValues)];
+      if (uniqueVoteValues.length === 1 && uniqueVoteValues[0] !== '-') {
+        console.log(msg, 'votes all match', uniqueVoteValues); // eslint-disable-line
+        EventBus.$emit('pyro:timed', 2000);
+      } else {
+        console.log(msg, 'vote mismatch', uniqueVoteValues); // eslint-disable-line
       }
     },
     clearVotes() {
