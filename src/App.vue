@@ -97,10 +97,10 @@ export default {
     });
 
     EventBus.$on('pyro:timed', milliseconds => {
-      console.log('pryo:timed');
-      EventBus.$emit('pyro:asplode');
+      console.log('pyro:timed');
+      EventBus.$emit('pyro:asplode', true);
       setTimeout(() => {
-        EventBus.$emit('pyro:nosplode');
+        EventBus.$emit('pyro:nosplode', true);
       }, milliseconds);
     });
   },
