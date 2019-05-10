@@ -86,12 +86,12 @@ export default {
       this.setTheme(isSpooky);
     });
 
-    EventBus.$on('pryo:asplode', () => {
+    EventBus.$on('pyro:asplode', () => {
       console.log('asplode');
       this.asplode = true;
     });
 
-    EventBus.$on('pryo:nosplode', () => {
+    EventBus.$on('pyro:nosplode', () => {
       console.log('nosplode');
       this.asplode = false;
     });
