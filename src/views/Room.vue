@@ -141,10 +141,10 @@ export default {
             const voteValues = this.votes.map(({ value }) => value);
             const uniqueVoteValues = [...new Set(voteValues)];
             if (uniqueVoteValues.length === 1) {
-              // console.log('votes all match'); // eslint-disable-line
+              console.log('votes all match', uniqueVoteValues); // eslint-disable-line
               EventBus.$emit('pyro:timed', 2000);
             } else {
-              // console.log('vote mismatch'); // eslint-disable-line
+              console.log('vote mismatch', uniqueVoteValues); // eslint-disable-line
             }
           }
         });
