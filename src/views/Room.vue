@@ -99,16 +99,12 @@ export default {
         value,
       }));
 
-      this.checkForMatchedVotes('room-changed');
+      this.checkForMatchedVotes();
     });
 
 
     socket.on(`room:${this.roomId}:setLock`, (isLocked) => {
       this.isLocked = isLocked;
-
-      if (isLocked) {
-        this.checkForMatchedVotes('setLock');
-      }
     });
 
     socket.on(`room story ${this.roomId}`, ({ storyText }) => {
@@ -148,17 +144,11 @@ export default {
         });
       }
     },
-    checkForMatchedVotes(msg) {
-      const voteValues = this.votes
-        // .filter(({ playerName }) => playerName !== this.playerName)
-        .map(({ value }) => value);
-        // .concat(value);
+    checkForMatchedVotes() {
+      const voteValues = this.votes.map(({ value }) => value);
       const uniqueVoteValues = [...new Set(voteValues)];
       if (uniqueVoteValues.length === 1 && uniqueVoteValues[0] !== '-') {
-        console.log(msg, 'votes all match', uniqueVoteValues); // eslint-disable-line
         EventBus.$emit('pyro:timed', 2000);
-      } else {
-        console.log(msg, 'vote mismatch', uniqueVoteValues); // eslint-disable-line
       }
     },
     clearVotes() {
