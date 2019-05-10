@@ -87,17 +87,14 @@ export default {
     });
 
     EventBus.$on('pyro:asplode', () => {
-      console.log('asplode');
       this.asplode = true;
     });
 
     EventBus.$on('pyro:nosplode', () => {
-      console.log('nosplode');
       this.asplode = false;
     });
 
     EventBus.$on('pyro:timed', milliseconds => {
-      console.log('pyro:timed');
       EventBus.$emit('pyro:asplode', true);
       setTimeout(() => {
         EventBus.$emit('pyro:nosplode', true);
