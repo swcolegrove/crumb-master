@@ -67,10 +67,6 @@ export default {
       }
     },
     getFx() {
-      const today = new Date();
-      if (today.getMonth() === 6) { // July
-        return 'fireworks';
-      }
       return 'pyro';
     },
     setTheme(isSpooky) {

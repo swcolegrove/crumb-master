@@ -150,7 +150,7 @@ export default {
         .filter(value => value !== '?');
       const uniqueVoteValues = [...new Set(voteValues)];
       if (uniqueVoteValues.length === 1 && uniqueVoteValues[0] !== '-') {
-        EventBus.$emit('fx:timed', 2500);
+        EventBus.$emit('fx:timed', 2000);
       }
     },
     clearVotes() {
