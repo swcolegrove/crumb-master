@@ -183,6 +183,11 @@ export default {
       this.clearCanvas();
     });
 
+    EventBus.$on('fireworks:faded', () => {
+      console.log('fireworks done'); // eslint-disable-line
+      this.clearCanvas();
+    });
+
     function launch() {
       launchFrom(mousePos.x);
     }
@@ -243,6 +248,7 @@ export default {
 
       rockets = existingRockets;
 
+      const oldParticlesCount = particles.length;
       const existingParticles = [];
 
       for (let i = 0; i < particles.length; i++) {
@@ -257,6 +263,9 @@ export default {
 
       // update array with existing particles - old particles should be garbage collected
       particles = existingParticles;
+      if (particles.length < 1 && oldParticlesCount >= 1) {
+        EventBus.$emit('fireworks:faded');
+      }
 
       while (particles.length > MAX_PARTICLES) {
         particles.shift();
