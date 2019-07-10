@@ -18,8 +18,12 @@
       <div class="col-6">
         <timer :room-id="roomId"></timer>
       </div>
-      <div class="col-6">
+      <div class="col-3">
         <lock-box text="Lock Votes" v-model="isLocked" :checked="isLocked" :change-event="setVotingLock"></lock-box>
+      </div>
+      <div class="col-3 checkbox-container">
+        <input id="useCards" type="checkbox" v-model="showCards" @change="toggleCards()">
+        <label for="useCards">Use cards</label>
       </div>
     </div>
 
@@ -33,7 +37,8 @@
       >{{ voteOption.text }}</button>
     </div>
     <div class="vote-area">
-      <vote-list :votes="votes" :show-votes="showVotes"></vote-list>
+      <card-list v-if="showCards" :votes="votes" :show-votes="showVotes"></card-list>
+      <vote-list v-else :votes="votes" :show-votes="showVotes"></vote-list>
     </div>
     <div class="vote-summary">
 
@@ -48,7 +53,7 @@ import voteOptions from '../defaultVoteOptions';
 import UserSession from '../mixins/UserSession.js';
 import axios from 'axios';
 import * as debounce from 'lodash/debounce'
-import { toBoolean } from '../util/utils.js';
+import { toBoolean, isNullOrUndefined } from '../util/utils.js';
 import { EventBus } from '../util/EventBus.js';
 
 const socket = io();
@@ -71,6 +76,7 @@ export default {
       storyTextIsDirty: false,
       voteOptions,
       votes: [],
+      showCards: false,
     };
   },
   beforeMount() {
@@ -112,9 +118,12 @@ export default {
       // TODO: Is this triggering the watcher again?
     });
 
-    EventBus.$on('username:change', () => {
-      this.$router.go();
-    });
+    const localShowCards = localStorage.getItem('showCards');
+    if (!isNullOrUndefined(localShowCards)) {
+      this.showCards = toBoolean(localShowCards);
+    } else {
+      localStorage.setItem('showCards', this.showCards);
+    }
   },
   computed: {
     roomId() {
@@ -207,7 +216,11 @@ export default {
       axios.post('/update-room-name', { roomId: this.roomId, roomName: this.roomName}).then(() => {
         socket.emit('room:update', { roomId: this.roomId });
       });
-    }
+    },
+    toggleCards() {
+      localStorage.setItem('showCards', this.showCards);
+      this.$router.go(); // Doing this because vue checkboxes are dumb af
+    },
   },
 }
 </script>
@@ -240,5 +253,15 @@ export default {
 label {
   display: flex;
   flex-direction: column;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
+  input {
+    margin-right: 5px;
+  }
 }
 </style>

@@ -86,6 +86,10 @@ export default {
       this.setTheme(isSpooky);
     });
 
+    EventBus.$on('username:change', () => {
+      this.$router.go();
+    });
+
     EventBus.$on('pyro:asplode', () => {
       this.asplode = true;
     });
