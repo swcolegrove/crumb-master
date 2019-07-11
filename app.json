@@ -1,0 +1,25 @@
+{
+  "addons": [
+    "heroku-redis",
+    "scheduler"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "env": {
+    "REDIS_URL": {
+      "required": true
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "name": "crumb-master",
+  "scripts": {
+  },
+  "stack": "heroku-18"
+}
