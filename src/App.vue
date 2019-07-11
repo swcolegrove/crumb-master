@@ -1,5 +1,6 @@
 <template>
   <div id="app" :class="[getUiTheme(), { pyro: asplode }]">
+    <fireworks></fireworks>
     <div class="before"></div>
     <header>
       <router-link to="/"><img class="logo" src="./assets/crumb-master.png" /></router-link>
@@ -65,6 +66,13 @@ export default {
         localStorage.setItem('isSpooky', this.isSpooky);
       }
     },
+    getFx() {
+      const today = new Date();
+      if (today.getMonth() === 6) { // July
+        return 'fireworks';
+      }
+      return 'pyro';
+    },
     setTheme(isSpooky) {
       this.isSpooky = isSpooky;
       localStorage.isSpooky = isSpooky;
@@ -78,6 +86,7 @@ export default {
     },
   },
   mounted() {
+    window.EventBus = EventBus;
     this.getSpooky();
 
     this.username = this.getUsername();
@@ -86,18 +95,19 @@ export default {
       this.setTheme(isSpooky);
     });
 
-    EventBus.$on('pyro:asplode', () => {
+    EventBus.$on('pyro:start', () => {
       this.asplode = true;
     });
 
-    EventBus.$on('pyro:nosplode', () => {
+    EventBus.$on('pyro:stop', () => {
       this.asplode = false;
     });
 
-    EventBus.$on('pyro:timed', milliseconds => {
-      EventBus.$emit('pyro:asplode', true);
+    EventBus.$on('fx:timed', milliseconds => {
+      const fxName = this.getFx();
+      EventBus.$emit(`${fxName}:start`, true);
       setTimeout(() => {
-        EventBus.$emit('pyro:nosplode', true);
+        EventBus.$emit(`${fxName}:stop`, true);
       }, milliseconds);
     });
   },
