@@ -130,14 +130,14 @@ export default {
     modeVotes() {
       const voteValues = this.filterVotes();
       if (voteValues.length) {
-        let map = voteValues.reduce(function(map, item){
+        let map = voteValues.reduce((map, item) => {
           if(!(item in map)) map[item] = 0;
           return map[item]++, map;
         }, {});
         let maxAppearenceValue = Math.max.apply(null, Object.values(map));
         let mostCommonValuesArr = [];
-        Object.keys(map).forEach(function(k){
-          if(map[k] === maxAppearenceValue) mostCommonValuesArr.push(k);
+        Object.keys(map).forEach((key) => {
+          if(map[key] === maxAppearenceValue) mostCommonValuesArr.push(key);
         });
 
         return {
