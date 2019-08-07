@@ -36,8 +36,12 @@
       <vote-list :votes="votes" :show-votes="showVotes"></vote-list>
     </div>
     <div v-if="showVotes" class="vote-area">
+      <h3>Vote summary</h3>
       <p>
-        Avg. Vote: {{getAvgVote}}
+        Avg. Vote: <span class="blue">{{getAvgVote}}</span>
+      </p>
+      <p>
+        The most common vote was <span class="blue">{{modeVotes.values}}</span> which was selected {{modeVotes.count}} times out of {{modeVotes.totalVotes}} votes
       </p>
     </div>
   </main>
@@ -116,11 +120,37 @@ export default {
   },
   computed: {
     getAvgVote() {
-      const voteValues = this.reduceVotes();
+      const voteValues = this.filterVotes();
       if (voteValues.length) {
         return voteValues.reduce((val, total) => parseFloat(val) + parseFloat(total)) / voteValues.length;
       } else {
         return 0;
+      }
+    },
+    modeVotes() {
+      const voteValues = this.filterVotes();
+      if (voteValues.length) {
+        let map = voteValues.reduce(function(map, item){
+          if(!(item in map)) map[item] = 0;
+          return map[item]++, map;
+        }, {});
+        let maxAppearenceValue = Math.max.apply(null, Object.values(map));
+        let mostCommonValuesArr = [];
+        Object.keys(map).forEach(function(k){
+          if(map[k] === maxAppearenceValue) mostCommonValuesArr.push(k);
+        });
+
+        return {
+          values: mostCommonValuesArr.join(', '),
+          count: maxAppearenceValue,
+          totalVotes: voteValues.length,
+        };
+      } else {
+        return {
+          values: '?',
+          count: '?',
+          totalVotes: '?',
+        }
       }
     },
     roomId() {
@@ -184,7 +214,7 @@ export default {
     makeMeCrumbMaster() {
       this.isCrumbMaster = true;
     },
-    reduceVotes() {
+    filterVotes() {
       return this.votes.map((vote) => vote.value)
         .filter(val => !isNaN(val));
     },
@@ -250,5 +280,9 @@ export default {
 label {
   display: flex;
   flex-direction: column;
+}
+
+span.blue {
+  color: $ui-color-action;
 }
 </style>
