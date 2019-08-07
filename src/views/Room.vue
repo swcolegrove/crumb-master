@@ -36,7 +36,7 @@
       <vote-list :votes="votes" :show-votes="showVotes"></vote-list>
     </div>
     <div class="vote-summary">
-
+      Avg. Vote:
     </div>
   </main>
 </template>
@@ -110,10 +110,6 @@ export default {
     socket.on(`room story ${this.roomId}`, ({ storyText }) => {
       this.storyText = storyText;
       // TODO: Is this triggering the watcher again?
-    });
-
-    EventBus.$on('username:change', () => {
-      this.$router.go();
     });
   },
   computed: {
@@ -207,7 +203,7 @@ export default {
       axios.post('/update-room-name', { roomId: this.roomId, roomName: this.roomName}).then(() => {
         socket.emit('room:update', { roomId: this.roomId });
       });
-    }
+    },
   },
 }
 </script>
