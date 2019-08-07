@@ -35,8 +35,14 @@
     <div class="vote-area">
       <vote-list :votes="votes" :show-votes="showVotes"></vote-list>
     </div>
-    <div class="vote-summary">
-
+    <div v-if="showVotes" class="vote-area">
+      <h3>Vote summary</h3>
+      <p>
+        Avg. Vote: <span class="blue">{{getAvgVote}}</span>
+      </p>
+      <p>
+        The most common vote was <span class="blue">{{modeVotes.values}}</span> which was selected {{modeVotes.count}} times out of {{modeVotes.totalVotes}} votes
+      </p>
     </div>
   </main>
 </template>
@@ -111,12 +117,42 @@ export default {
       this.storyText = storyText;
       // TODO: Is this triggering the watcher again?
     });
-
-    EventBus.$on('username:change', () => {
-      this.$router.go();
-    });
   },
   computed: {
+    getAvgVote() {
+      const voteValues = this.filterVotes();
+      if (voteValues.length) {
+        return voteValues.reduce((val, total) => parseFloat(val) + parseFloat(total)) / voteValues.length;
+      } else {
+        return 0;
+      }
+    },
+    modeVotes() {
+      const voteValues = this.filterVotes();
+      if (voteValues.length) {
+        let map = voteValues.reduce((map, item) => {
+          if(!(item in map)) map[item] = 0;
+          return map[item]++, map;
+        }, {});
+        let maxAppearenceValue = Math.max.apply(null, Object.values(map));
+        let mostCommonValuesArr = [];
+        Object.keys(map).forEach((key) => {
+          if(map[key] === maxAppearenceValue) mostCommonValuesArr.push(key);
+        });
+
+        return {
+          values: mostCommonValuesArr.join(', '),
+          count: maxAppearenceValue,
+          totalVotes: voteValues.length,
+        };
+      } else {
+        return {
+          values: '?',
+          count: '?',
+          totalVotes: '?',
+        }
+      }
+    },
     roomId() {
       return this.$route.params.roomId;
     },
@@ -178,6 +214,10 @@ export default {
     makeMeCrumbMaster() {
       this.isCrumbMaster = true;
     },
+    filterVotes() {
+      return this.votes.map((vote) => vote.value)
+        .filter(val => !isNaN(val));
+    },
     toggleShowVotes() {
       const shouldShow = !this.showVotes;
 
@@ -207,7 +247,7 @@ export default {
       axios.post('/update-room-name', { roomId: this.roomId, roomName: this.roomName}).then(() => {
         socket.emit('room:update', { roomId: this.roomId });
       });
-    }
+    },
   },
 }
 </script>
@@ -240,5 +280,9 @@ export default {
 label {
   display: flex;
   flex-direction: column;
+}
+
+span.blue {
+  color: $ui-color-action;
 }
 </style>
