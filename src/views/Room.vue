@@ -35,8 +35,10 @@
     <div class="vote-area">
       <vote-list :votes="votes" :show-votes="showVotes"></vote-list>
     </div>
-    <div class="vote-summary">
-      Avg. Vote:
+    <div v-if="showVotes" class="vote-area">
+      <p>
+        Avg. Vote: {{getAvgVote}}
+      </p>
     </div>
   </main>
 </template>
@@ -113,6 +115,14 @@ export default {
     });
   },
   computed: {
+    getAvgVote() {
+      const voteValues = this.reduceVotes();
+      if (voteValues.length) {
+        return voteValues.reduce((val, total) => parseFloat(val) + parseFloat(total)) / voteValues.length;
+      } else {
+        return 0;
+      }
+    },
     roomId() {
       return this.$route.params.roomId;
     },
@@ -173,6 +183,10 @@ export default {
     },
     makeMeCrumbMaster() {
       this.isCrumbMaster = true;
+    },
+    reduceVotes() {
+      return this.votes.map((vote) => vote.value)
+        .filter(val => !isNaN(val));
     },
     toggleShowVotes() {
       const shouldShow = !this.showVotes;
