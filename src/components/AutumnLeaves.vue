@@ -30,7 +30,7 @@ export default {
       if (dropInterval) {
         clearInterval(dropInterval);
       }
-      dropInterval = setInterval(dropLeaf, DROP_FREQUENCY);
+      dropInterval = setInterval(this.dropLeaf, DROP_FREQUENCY);
     });
 
     EventBus.$on('autumn-leaves:stop', () => {
@@ -42,15 +42,16 @@ export default {
       console.log('autumn-leaves done and faded'); // eslint-disable-line
       this.leaves.length = 0;
     });
-
-    function dropLeaf() {
-      console.log('dropping another leaf');
-    }
   },
   methods: {
     cleanLoops() {
       clearInterval(dropInterval);
       dropInterval = null;
+    },
+    dropLeaf() {
+      console.log('dropping another leaf');
+
+      this.leaves.push({});
     },
     fadeLeaves() {
 
