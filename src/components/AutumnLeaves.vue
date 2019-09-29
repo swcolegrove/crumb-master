@@ -1,6 +1,6 @@
 <template>
   <div class="falling-leaves">
-    <span v-for
+    <span v-for="(leaf, idx) in leaves" :key="idx"></span>
   </div>
 </template>
 
