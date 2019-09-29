@@ -1,3 +1,4 @@
+import AutumnLeaves from './AutumnLeaves.vue';
 import Fireworks from './Fireworks.vue';
 import LockBox from './LockBox.vue';
 import Modal from './Modal.vue';
@@ -7,6 +8,7 @@ import Toggle from './Toggle.vue'
 import VoteList from './VoteList.vue'
 
 export default {
+  'autumn-leaves': AutumnLeaves,
   fireworks: Fireworks,
   'lock-box': LockBox,
   modal: Modal,

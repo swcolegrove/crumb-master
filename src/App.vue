@@ -1,5 +1,6 @@
 <template>
   <div id="app" :class="[getUiTheme(), { pyro: asplode }]">
+    <autumn-leaves></autumn-leaves>
     <fireworks></fireworks>
     <div class="before"></div>
     <header>
@@ -68,8 +69,11 @@ export default {
     },
     getFx() {
       const today = new Date();
-      if (today.getMonth() === 6) { // July
+      const month = today.getMonth();
+      if (month === 6) { // July
         return 'fireworks';
+      } else if (month === 9) {
+        return 'autumn-leaves';
       }
       return 'pyro';
     },
