@@ -72,7 +72,7 @@ export default {
       const month = today.getMonth();
       if (month === 6) { // July
         return 'fireworks';
-      } else if (month === 9) {
+      } else if (month === 9) { // October
         return 'autumn-leaves';
       }
       return 'pyro';

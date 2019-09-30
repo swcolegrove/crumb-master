@@ -1,5 +1,7 @@
 <template>
-  <div class="falling-leaves">
+  <div
+    :class="[{ 'is-fading': isFading }, 'falling-leaves']"
+  >
     <span v-for="(leaf, idx) in leaves" :key="idx"></span>
   </div>
 </template>
@@ -7,18 +9,23 @@
 <script>
 import { EventBus } from '../util/EventBus.js';
 
-const dropInterval;
+let dropInterval;
 
 export default {
-  name: 'Fireworks',
+  name: 'AutumnLeaves',
   props: {
-
+    dropFrequency: {
+      type: Number,
+      default: 2000 / 30, // Set base rate at 30 over 2s
+    },
+    fadeSpeed: {
+      type: Number,
+      default: 500,
+    },
   },
   data() {
-    const leafCount = 30;
-
     return {
-      dropFrequency: 2000 / leafCount, // Set base rate at 30 over 2s
+      isFading: false,
       leaves: [],
     };
   },
@@ -36,10 +43,16 @@ export default {
     EventBus.$on('autumn-leaves:stop', () => {
       console.log('autumn-leaves stopping'); // eslint-disable-line
       clearInterval(dropInterval);
+
+      this.isFading = true;
+      setTimeout(() => {
+        EventBus.$emit('autumn-leaves:faded');
+      }, this.fadeSpeed);
     });
 
     EventBus.$on('autumn-leaves:faded', () => {
       console.log('autumn-leaves done and faded'); // eslint-disable-line
+      this.isFading = false;
       this.leaves.length = 0;
     });
   },
@@ -49,7 +62,7 @@ export default {
       dropInterval = null;
     },
     dropLeaf() {
-      console.log('dropping another leaf');
+      console.log('dropping another leaf'); // eslint-disable-line
 
       this.leaves.push({});
     },
@@ -66,31 +79,35 @@ export default {
 <style lang="scss">
   @keyframes fallingLeaves {
     0% {
-      opacity: 1;
+      // opacity: 1;
       transform: translate(0, 0) rotateZ(0deg);
     }
     75% {
-      opacity: 1;
+      // opacity: 1;
       transform: translate(100px, 600px) rotateZ(270deg);
     }
     100% {
-      opacity: 0;
+      // opacity: 0;
       transform: translate(150px, 800px) rotateZ(360deg);
     }
   }
 
   .falling-leaves {
+    position: absolute;
+
     span {
       display: inline-block;
+      opacity: 1;
       width: 80px;
       height: 80px;
       margin: -280px 40px 54px -34px;
 
-      background:url(“leaf.png”);
+      background: url('../assets/leaf.png');
 
-      -webkit-animation: fallingLeaves 10s infinite linear;
-      -moz-animation: fallingLeaves 10s infinite linear;
-      animation: fallingLeaves 10s infinite linear;
+      -webkit-animation: fallingLeaves 6s infinite linear;
+      -moz-animation: fallingLeaves 6s infinite linear;
+      animation: fallingLeaves 6s infinite linear;
+      transition: opacity .5s ease-out;
 
       &:nth-child(5n+5) {
         -webkit-animation-delay: 1s;
@@ -108,6 +125,12 @@ export default {
         -webkit-animation-delay: 1.7s;
         -moz-animation-delay: 1.7s;
         animation-delay: 1.7s;
+      }
+    }
+
+    &.is-fading {
+      span {
+        opacity: 0;
       }
     }
   }
