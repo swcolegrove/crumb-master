@@ -12,6 +12,7 @@
     "dev": "concurrently \"npm run build:watch\" \"env-cmd .env npm start\"",
     "heroku:init": "heroku git:remote -a crumb-master",
     "publish": "git push heroku master",
+    "publish:staging": "git push staging develop:master",
     "start": "node index.js",
     "heroku-postbuild": "npm run build",
     "clean-redis": "node bin/cleanRedis.js"
