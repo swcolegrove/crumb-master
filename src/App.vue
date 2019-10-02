@@ -71,11 +71,11 @@ export default {
       const today = new Date();
       const month = today.getMonth();
       if (month === 6) { // July
-        return 'fireworks';
+        return { name: 'fireworks' };
       } else if (month === 9) { // October
-        return 'autumn-leaves';
+        return { name: 'autumn-leaves', duration: 5000 };
       }
-      return 'pyro';
+      return { name: 'pyro' };
     },
     setTheme(isSpooky) {
       this.isSpooky = isSpooky;
@@ -112,11 +112,11 @@ export default {
     });
 
     EventBus.$on('fx:timed', milliseconds => {
-      const fxName = this.getFx();
-      EventBus.$emit(`${fxName}:start`, true);
+      const { name, duration = milliseconds } = this.getFx();
+      EventBus.$emit(`${name}:start`, true);
       setTimeout(() => {
-        EventBus.$emit(`${fxName}:stop`, true);
-      }, milliseconds);
+        EventBus.$emit(`${name}:stop`, true);
+      }, duration);
     });
   },
 }
