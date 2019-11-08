@@ -1,8 +1,11 @@
 <template>
   <label>
-    <input type="checkbox" :checked="checked"
-      v-on:input="$emit('input', $event.target.checked)">
-    <span class="toggle"></span>
+    <input
+      type="checkbox"
+      :checked="checked"
+      @input="$emit('input', $event.target.checked)"
+    >
+    <span class="toggle" />
   </label>
 </template>
 
@@ -14,8 +17,8 @@ export default {
       type: Boolean,
       required: true,
     },
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss" scoped>

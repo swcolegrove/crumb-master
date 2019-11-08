@@ -1,6 +1,12 @@
 <template>
-  <div class="modal" v-if="showModal">
-    <i class="fas fa-times close-modal" @click="closeModal"></i>
+  <div
+    v-if="showModal"
+    class="modal"
+  >
+    <i
+      class="fas fa-times close-modal"
+      @click="closeModal"
+    />
     <div class="row">
       <div class="col-12 modal-heading">
         <h3>{{ heading }}</h3>
@@ -30,7 +36,7 @@ export default {
     };
   },
   mounted() {
-    EventBus.$on('showModal', (modalName) => {
+    EventBus.$on('showModal', modalName => {
       if (modalName === this.name) {
         this.showModal = true;
       }

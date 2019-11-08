@@ -1,59 +1,94 @@
 <template>
   <main>
-    <div class="room-info">Room Link: <input type="text" ref="inputCopyLink" :value="roomLink" readonly="true"/> <i @click="copyId" class="fas fa-copy btn-icon"></i></div>
-    <div class="player-info"><h2>{{ playerName }}</h2></div>
+    <div class="room-info">
+      Room Link: <input
+        ref="inputCopyLink"
+        type="text"
+        :value="roomLink"
+        readonly="true"
+      > <i
+        class="fas fa-copy btn-icon"
+        @click="copyId"
+      />
+    </div>
+    <div class="player-info">
+      <h2>{{ playerName }}</h2>
+    </div>
     <div class="story-info">
       <label>
         Story Description:
-        <textarea v-model="storyText"></textarea>
+        <textarea v-model="storyText" />
       </label>
     </div>
     <div class="vote-controls">
-      <button class="glow" @click="clearVotes">Clear Votes</button>
-      <button class="fill" @click="toggleShowVotes()"> {{ !showVotes ? 'Show Votes' : 'Hide Votes' }}</button>
+      <button
+        class="glow"
+        @click="clearVotes"
+      >
+        Clear Votes
+      </button>
+      <button
+        class="fill"
+        @click="toggleShowVotes()"
+      >
+        {{ !showVotes ? 'Show Votes' : 'Hide Votes' }}
+      </button>
       <!-- <button class="diagonal" @click="makeMeCrumbMaster"><i class="fas fa-crown"></i> I am the Crumb Master!</button> -->
     </div>
 
     <div class="row">
       <div class="col-6">
-        <timer :room-id="roomId"></timer>
+        <timer :room-id="roomId" />
       </div>
       <div class="col-6">
-        <lock-box text="Lock Votes" v-model="isLocked" :checked="isLocked" :change-event="setVotingLock"></lock-box>
+        <lock-box
+          v-model="isLocked"
+          text="Lock Votes"
+          :checked="isLocked"
+          :change-event="setVotingLock"
+        />
       </div>
     </div>
 
     <div class="vote-options">
       <button
-        class="btn-vote diagonal"
         v-for="(voteOption, idx) in voteOptions"
         :key="idx"
-        @click="castVote(voteOption.value)"
+        class="btn-vote diagonal"
         :disabled="isLocked"
-      >{{ voteOption.text }}</button>
+        @click="castVote(voteOption.value)"
+      >
+        {{ voteOption.text }}
+      </button>
     </div>
     <div class="vote-area">
-      <vote-list :votes="votes" :show-votes="showVotes"></vote-list>
+      <vote-list
+        :votes="votes"
+        :show-votes="showVotes"
+      />
     </div>
-    <div v-if="showVotes" class="vote-area">
+    <div
+      v-if="showVotes"
+      class="vote-area"
+    >
       <h3>Vote summary</h3>
       <p>
-        Avg. Vote: <span class="blue">{{getAvgVote}}</span>
+        Avg. Vote: <span class="blue">{{ getAvgVote }}</span>
       </p>
       <p>
-        The most common vote was <span class="blue">{{modeVotes.values}}</span> which was selected {{modeVotes.count}} times out of {{modeVotes.totalVotes}} votes
+        The most common vote was <span class="blue">{{ modeVotes.values }}</span> which was selected {{ modeVotes.count }} times out of {{ modeVotes.totalVotes }} votes
       </p>
     </div>
   </main>
 </template>
 
 <script>
-import components from '../components';
 import io from 'socket.io-client';
+import axios from 'axios';
+import * as debounce from 'lodash/debounce';
+import components from '../components';
 import voteOptions from '../defaultVoteOptions';
 import UserSession from '../mixins/UserSession.js';
-import axios from 'axios';
-import * as debounce from 'lodash/debounce'
 import { toBoolean } from '../util/utils.js';
 import { EventBus } from '../util/EventBus.js';
 
@@ -79,13 +114,56 @@ export default {
       votes: [],
     };
   },
+  computed: {
+    getAvgVote() {
+      const voteValues = this.filterVotes();
+      if (voteValues.length) {
+        return voteValues.reduce((val, total) => parseFloat(val) + parseFloat(total)) / voteValues.length;
+      }
+      return 0;
+    },
+    modeVotes() {
+      const voteValues = this.filterVotes();
+      if (voteValues.length) {
+        const map = voteValues.reduce((map, item) => {
+          if (!(item in map)) map[item] = 0;
+          return map[item]++, map;
+        }, {});
+        const maxAppearenceValue = Math.max.apply(null, Object.values(map));
+        const mostCommonValuesArr = [];
+        Object.keys(map).forEach(key => {
+          if (map[key] === maxAppearenceValue) mostCommonValuesArr.push(key);
+        });
+
+        return {
+          values: mostCommonValuesArr.join(', '),
+          count: maxAppearenceValue,
+          totalVotes: voteValues.length,
+        };
+      }
+      return {
+        values: '?',
+        count: '?',
+        totalVotes: '?',
+      };
+    },
+    roomId() {
+      return this.$route.params.roomId;
+    },
+  },
+  watch: {
+    storyText() {
+      this.storyTextIsDirty = true;
+      this.debounceStorySyncing();
+    },
+  },
   beforeMount() {
     // 1. Check for user session
     // 2. If no user - bring to the home page
     const username = this.getUsername();
     if (!username) {
-      const roomId = this.$route.params.roomId;
-      this.$router.push({ path: `/`, query: { roomId: roomId } });
+      const { roomId } = this.$route.params;
+      this.$router.push({ path: '/', query: { roomId } });
     }
   },
   mounted() {
@@ -100,7 +178,7 @@ export default {
       this.showVotes = toBoolean(newRoomData.showVotes);
       this.isLocked = toBoolean(newRoomData.isLocked);
 
-      this.votes = Object.entries(newRoomData.votes).map(([ playerName, value ]) => ({
+      this.votes = Object.entries(newRoomData.votes).map(([playerName, value]) => ({
         playerName,
         value,
       }));
@@ -109,7 +187,7 @@ export default {
     });
 
 
-    socket.on(`room:${this.roomId}:setLock`, (isLocked) => {
+    socket.on(`room:${this.roomId}:setLock`, isLocked => {
       this.isLocked = isLocked;
     });
 
@@ -118,59 +196,14 @@ export default {
       // TODO: Is this triggering the watcher again?
     });
   },
-  computed: {
-    getAvgVote() {
-      const voteValues = this.filterVotes();
-      if (voteValues.length) {
-        return voteValues.reduce((val, total) => parseFloat(val) + parseFloat(total)) / voteValues.length;
-      } else {
-        return 0;
-      }
-    },
-    modeVotes() {
-      const voteValues = this.filterVotes();
-      if (voteValues.length) {
-        let map = voteValues.reduce((map, item) => {
-          if(!(item in map)) map[item] = 0;
-          return map[item]++, map;
-        }, {});
-        let maxAppearenceValue = Math.max.apply(null, Object.values(map));
-        let mostCommonValuesArr = [];
-        Object.keys(map).forEach((key) => {
-          if(map[key] === maxAppearenceValue) mostCommonValuesArr.push(key);
-        });
-
-        return {
-          values: mostCommonValuesArr.join(', '),
-          count: maxAppearenceValue,
-          totalVotes: voteValues.length,
-        };
-      } else {
-        return {
-          values: '?',
-          count: '?',
-          totalVotes: '?',
-        }
-      }
-    },
-    roomId() {
-      return this.$route.params.roomId;
-    },
-  },
-  watch: {
-    storyText() {
-      this.storyTextIsDirty = true;
-      this.debounceStorySyncing();
-    },
-  },
   methods: {
     castVote(value) {
       if (!this.isSpectator) {
         axios.post('/cast-vote', { roomId: this.roomId, username: this.playerName, value }).then(() => {
           socket.emit('room:update', { roomId: this.roomId });
           if (
-            !this.showVotes &&
-            !this.votes
+            !this.showVotes
+            && !this.votes
               .filter(({ playerName }) => playerName !== this.playerName)
               .some(({ value }) => value === '-')
           ) {
@@ -215,7 +248,7 @@ export default {
       this.isCrumbMaster = true;
     },
     filterVotes() {
-      return this.votes.map((vote) => vote.value)
+      return this.votes.map(vote => vote.value)
         .filter(val => !isNaN(val));
     },
     toggleShowVotes() {
@@ -234,8 +267,8 @@ export default {
       const username = this.getUsername();
       if (username) {
         this.playerName = username;
-        const roomId = this.roomId;
-        axios.post('/join-room', { username, roomId } ).then((response) => {
+        const { roomId } = this;
+        axios.post('/join-room', { username, roomId }).then(response => {
           this.setPastRoom(roomId, response.data.roomData.roomName);
           this.storyText = response.data.roomData.storyText;
           socket.emit('room:joined', { username, roomId });
@@ -244,12 +277,12 @@ export default {
       }
     },
     updateRoom() {
-      axios.post('/update-room-name', { roomId: this.roomId, roomName: this.roomName}).then(() => {
+      axios.post('/update-room-name', { roomId: this.roomId, roomName: this.roomName }).then(() => {
         socket.emit('room:update', { roomId: this.roomId });
       });
     },
   },
-}
+};
 </script>
 
 <style lang="scss" scoped>

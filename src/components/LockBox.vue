@@ -1,7 +1,13 @@
 <template>
   <div class="lock-box">
-    <input type="checkbox" id="lock" :checked="checked" @change="changeEvent" v-on:input="$emit('input', $event.target.checked)" />
-    <label for="lock"><i></i></label>
+    <input
+      id="lock"
+      type="checkbox"
+      :checked="checked"
+      @change="changeEvent"
+      @input="$emit('input', $event.target.checked)"
+    >
+    <label for="lock"><i /></label>
     {{ text }}
   </div>
 </template>
@@ -20,7 +26,7 @@ export default {
     changeEvent: {
       type: Function,
     },
-  }
+  },
 };
 </script>
 

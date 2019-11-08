@@ -28,6 +28,6 @@ export default {
         pastRooms = JSON.stringify(pastRooms);
         localStorage.setItem('pastRooms', pastRooms);
       }
-    }
+    },
   },
 };

@@ -4,30 +4,62 @@
       <span class="dat-space">Enter your username to get started:</span>
       <div class="row">
         <div class="col-12">
-          <input class="dat-space" type="text" v-model="username">
-          <button class="diagonal dat-space" @click="setName">Set name</button>
+          <input
+            v-model="username"
+            class="dat-space"
+            type="text"
+          >
+          <button
+            class="diagonal dat-space"
+            @click="setName"
+          >
+            Set name
+          </button>
         </div>
       </div>
     </div>
-    <div v-else >
+    <div v-else>
       <span class="dat-space">Welcome, {{ username }}!</span>
       <span class="dat-space">Create or join a room</span>
       <div class="row">
         <div class="col-12">
-          <input type="text" placeholder="Room Name" v-model="roomName">
-          <button class="diagonal dat-space" @click="createRoom">Create room</button>
+          <input
+            v-model="roomName"
+            type="text"
+            placeholder="Room Name"
+          >
+          <button
+            class="diagonal dat-space"
+            @click="createRoom"
+          >
+            Create room
+          </button>
         </div>
       </div>
       <div class="row">
         <div class="col-12">
           Past rooms:
-          <ul class="past-rooms" v-if="pastRooms && pastRooms.length > 0">
-            <li v-for="(room, roomKey) in pastRooms" :key="roomKey">
-              <router-link :to="`/room/${room.id}`">{{ room.name }}</router-link>
-              <a class="remove-room" @click="removePastRoom(room)" title="Remove"> X </a>
+          <ul
+            v-if="pastRooms && pastRooms.length > 0"
+            class="past-rooms"
+          >
+            <li
+              v-for="(room, roomKey) in pastRooms"
+              :key="roomKey"
+            >
+              <router-link :to="`/room/${room.id}`">
+                {{ room.name }}
+              </router-link>
+              <a
+                class="remove-room"
+                title="Remove"
+                @click="removePastRoom(room)"
+              > X </a>
             </li>
           </ul>
-          <p v-else>😥 You don't have any rooms yet</p>
+          <p v-else>
+            😥 You don't have any rooms yet
+          </p>
         </div>
       </div>
     </div>
@@ -35,8 +67,8 @@
 </template>
 
 <script>
-import UserSession from '../mixins/UserSession.js';
 import axios from 'axios';
+import UserSession from '../mixins/UserSession.js';
 
 export default {
   name: 'Home',
@@ -49,6 +81,15 @@ export default {
       pastRooms: [],
     };
   },
+  mounted() {
+    const name = this.getUsername();
+    if (name) {
+      this.usernameIsSet = true;
+      this.username = name;
+    }
+
+    this.getPastRoomList();
+  },
   methods: {
     setName() {
       this.setUsername(this.username);
@@ -59,9 +100,8 @@ export default {
       this.usernameIsSet = true;
     },
     createRoom() {
-      const roomName = this.roomName;
-      const username = this.username;
-      axios.post('/create-room', { roomName, username } ).then((response) => {
+      const { roomName, username } = this;
+      axios.post('/create-room', { roomName, username }).then(response => {
         const { roomId } = response.data.roomData;
         this.$router.push({ path: `/room/${roomId}` });
       });
@@ -77,7 +117,7 @@ export default {
     },
     getPastRoomList() {
       const pastRooms = this.getPastRooms();
-      this.pastRooms = pastRooms.map((room) => {
+      this.pastRooms = pastRooms.map(room => {
         const splitRoom = room.split('&&&');
         return {
           name: splitRoom[0],
@@ -86,16 +126,7 @@ export default {
       });
     },
   },
-  mounted() {
-    const name = this.getUsername();
-    if (name) {
-      this.usernameIsSet = true;
-      this.username = name;
-    }
-
-    this.getPastRoomList();
-  },
-}
+};
 </script>
 
 <style lang="scss" scoped>

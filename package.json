@@ -6,16 +6,16 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "build:watch": "nodemon --watch src --exec \"env-cmd .env vue-cli-service build\" --ext scss,js,vue",
-    "test": "echo \"TESTS??? We don't need no stinkin' tests!\" && exit 1",
     "lint": "vue-cli-service lint",
+    "build:watch": "nodemon --watch src --exec \"env-cmd .env vue-cli-service build\" --ext scss,js,vue",
+    "clean-redis": "node bin/cleanRedis.js",
     "dev": "concurrently \"npm run build:watch\" \"env-cmd .env npm start\"",
+    "heroku-postbuild": "npm run build",
     "heroku:init": "heroku git:remote -a crumb-master",
     "publish": "git push heroku master",
     "publish:staging": "git push staging develop:master",
     "start": "node index.js",
-    "heroku-postbuild": "npm run build",
-    "clean-redis": "node bin/cleanRedis.js"
+    "test": "echo \"TESTS??? We don't need no stinkin' tests!\" && exit 1"
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -32,12 +32,15 @@
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.7.2",
     "@vue/cli-plugin-babel": "^3.4.0",
-    "@vue/cli-plugin-eslint": "^3.4.0",
+    "@vue/cli-plugin-eslint": "^3.12.1",
     "@vue/cli-service": "^3.4.0",
+    "@vue/eslint-config-airbnb": "^4.0.0",
     "babel-eslint": "^10.0.1",
     "concurrently": "^4.1.0",
     "env-cmd": "^8.0.2",
-    "eslint": "^5.14.1",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-vue": "^5.0.0",
     "node-sass": "^4.11.0",
     "nodemon": "^1.18.10",
@@ -55,7 +58,8 @@
     },
     "extends": [
       "plugin:vue/essential",
-      "eslint:recommended"
+      "eslint:recommended",
+      "@vue/airbnb"
     ],
     "rules": {},
     "parserOptions": {

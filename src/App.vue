@@ -1,40 +1,59 @@
 <template>
-  <div id="app" :class="[getUiTheme(), { pyro: asplode }]">
-    <autumn-leaves></autumn-leaves>
-    <fireworks></fireworks>
+  <div
+    id="app"
+    :class="[getUiTheme(), { pyro: asplode }]"
+  >
+    <autumn-leaves />
+    <fireworks />
     <turkey-run />
-    <div class="before"></div>
+    <div class="before" />
     <header>
-      <router-link to="/"><img class="logo" src="./assets/crumb-master.png" /></router-link>
+      <router-link to="/">
+        <img
+          class="logo"
+          src="./assets/crumb-master.png"
+        >
+      </router-link>
 
-      <button class="fill" @click="showModal('settings')"><i class="fas fa-cog"></i></button>
+      <button
+        class="fill"
+        @click="showModal('settings')"
+      >
+        <i class="fas fa-cog" />
+      </button>
     </header>
 
     <div class="view-wrapper container">
-      <router-view></router-view>
+      <router-view />
     </div>
 
-    <modal name="settings" heading="Settings">
+    <modal
+      name="settings"
+      heading="Settings"
+    >
       <div class="row">
         <div class="col-12 mb-4">
           <p>Spooky Mode:</p>
           <toggle
             v-model="isSpooky"
             :checked="isSpooky"
-            >
-          </toggle>
+          />
         </div>
         <div class="col-12">
           <p>Username:</p>
-          <input v-model="username" />
-          <i @click="setName" class="fas fa-save btn-icon" title="save"></i>
+          <input v-model="username">
+          <i
+            class="fas fa-save btn-icon"
+            title="save"
+            @click="setName"
+          />
         </div>
       </div>
     </modal>
-    <modal-backdrop></modal-backdrop>
+    <modal-backdrop />
 
     <footer>Made by <a href="https://github.com/djragsdale">@djragsdale</a> & <a href="https://github.com/swcolegrove">@swcolegrove</a></footer>
-    <div class="after"></div>
+    <div class="after" />
   </div>
 </template>
 
@@ -43,54 +62,19 @@ import UserSession from './mixins/UserSession.js';
 import components from './components';
 import { EventBus } from './util/EventBus.js';
 import utils from './util/utils.js';
+
 const { isNullOrUndefined, toBoolean } = utils;
 
 export default {
-  name: 'app',
-  mixins: [UserSession],
+  name: 'App',
   components,
+  mixins: [UserSession],
   data() {
     return {
       isSpooky: true,
       username: '',
       asplode: false,
     };
-  },
-  methods: {
-    getUiTheme() {
-      return this.isSpooky ? 'dark' : 'light';
-    },
-    getSpooky() {
-      const localSpooky = localStorage.getItem('isSpooky');
-      if (!isNullOrUndefined(localSpooky)) {
-        this.isSpooky = toBoolean(localSpooky);
-      } else {
-        localStorage.setItem('isSpooky', this.isSpooky);
-      }
-    },
-    getFx() {
-      const today = new Date();
-      const month = today.getMonth();
-      if (month === 6) { // July
-        return { name: 'fireworks' };
-      } else if (month === 9) { // October
-        return { name: 'autumn-leaves', duration: 5000 };
-      } else if (month === 10) {
-        return { name: 'turkey-run' };
-      }
-      return { name: 'pyro' };
-    },
-    setTheme(isSpooky) {
-      this.isSpooky = isSpooky;
-      localStorage.isSpooky = isSpooky;
-    },
-    showModal(modalName) {
-      EventBus.$emit('showModal', modalName);
-    },
-    setName() {
-      this.setUsername(this.username);
-      EventBus.$emit('username:change');
-    },
   },
   mounted() {
     window.EventBus = EventBus;
@@ -122,7 +106,43 @@ export default {
       }, duration);
     });
   },
-}
+  methods: {
+    getUiTheme() {
+      return this.isSpooky ? 'dark' : 'light';
+    },
+    getSpooky() {
+      const localSpooky = localStorage.getItem('isSpooky');
+      if (!isNullOrUndefined(localSpooky)) {
+        this.isSpooky = toBoolean(localSpooky);
+      } else {
+        localStorage.setItem('isSpooky', this.isSpooky);
+      }
+    },
+    getFx() {
+      const today = new Date();
+      const month = today.getMonth();
+      if (month === 6) { // July
+        return { name: 'fireworks' };
+      } if (month === 9) { // October
+        return { name: 'autumn-leaves', duration: 5000 };
+      } if (month === 10) {
+        return { name: 'turkey-run' };
+      }
+      return { name: 'pyro' };
+    },
+    setTheme(isSpooky) {
+      this.isSpooky = isSpooky;
+      localStorage.isSpooky = isSpooky;
+    },
+    showModal(modalName) {
+      EventBus.$emit('showModal', modalName);
+    },
+    setName() {
+      this.setUsername(this.username);
+      EventBus.$emit('username:change');
+    },
+  },
+};
 </script>
 
 <style lang="scss">
