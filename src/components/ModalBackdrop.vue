@@ -1,5 +1,9 @@
 <template>
-  <div class="modal-backdrop" v-if="showModal" @click="closeModal"></div>
+  <div
+    v-if="showModal"
+    class="modal-backdrop"
+    @click="closeModal"
+  />
 </template>
 
 <script>
@@ -12,11 +16,6 @@ export default {
       showModal: false,
     };
   },
-  methods: {
-    closeModal() {
-      EventBus.$emit('closeModal');
-    },
-  },
   mounted() {
     EventBus.$on('showModal', () => {
       this.showModal = true;
@@ -25,6 +24,11 @@ export default {
     EventBus.$on('closeModal', () => {
       this.showModal = false;
     });
+  },
+  methods: {
+    closeModal() {
+      EventBus.$emit('closeModal');
+    },
   },
 };
 </script>

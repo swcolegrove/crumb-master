@@ -2,7 +2,10 @@
   <div
     :class="[{ 'is-fading': isFading }, 'falling-leaves']"
   >
-    <span v-for="(leaf, idx) in leaves" :key="idx"></span>
+    <span
+      v-for="(leaf, idx) in leaves"
+      :key="idx"
+    />
   </div>
 </template>
 
@@ -56,6 +59,9 @@ export default {
       this.leaves.length = 0;
     });
   },
+  beforeDestroy() {
+    this.cleanLoops();
+  },
   methods: {
     cleanLoops() {
       clearInterval(dropInterval);
@@ -70,10 +76,7 @@ export default {
 
     },
   },
-  beforeDestroy() {
-    this.cleanLoops();
-  },
-}
+};
 </script>
 
 <style lang="scss">

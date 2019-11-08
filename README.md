@@ -1,13 +1,6 @@
 # crumb-master
 
-agile planning poker
-
-## Needed features for release
-
-- Indicate a user has voted/ updated their vote
-- Clear votes
-- Lock voting
-- Start/ stop timer
+agile planning poker http://www.crumb-master.com/
 
 ## Features we might want
 
@@ -15,10 +8,4 @@ agile planning poker
 - Customized voting cards
 - Know when someone leaves room
 - Chat within voting window
-- Shared story description
-- Redis is flushed daily
-- Crumb master can lock votes in a room
-- Validate users only affecting a room they're in (can't show votes in another room)
-- Set/ edit a room name. Does it persist after redis wipe or get re created when someone re joins the room?
 - Validate / sanitize api calls
-- Auto-show votes when all votes are in

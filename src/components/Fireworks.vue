@@ -1,5 +1,5 @@
 <template>
-  <canvas id="fireworks"></canvas>
+  <canvas id="fireworks" />
 </template>
 
 <script>
@@ -26,13 +26,13 @@ let rockets = [];
 function Particle(pos) {
   this.pos = {
     x: pos ? pos.x : 0,
-    y: pos ? pos.y : 0
+    y: pos ? pos.y : 0,
   };
   this.vel = {
     x: 0,
-    y: 0
+    y: 0,
   };
-  this.shrink = .97;
+  this.shrink = 0.97;
   this.size = 2;
 
   this.resistance = 1;
@@ -45,7 +45,7 @@ function Particle(pos) {
   this.color = 0;
 }
 
-Particle.prototype.update = function() {
+Particle.prototype.update = function () {
   // apply resistance
   this.vel.x *= this.resistance;
   this.vel.y *= this.resistance;
@@ -64,7 +64,7 @@ Particle.prototype.update = function() {
   this.alpha -= this.fade;
 };
 
-Particle.prototype.render = function(c) {
+Particle.prototype.render = function (c) {
   if (!this.exists()) {
     return;
   }
@@ -73,8 +73,8 @@ Particle.prototype.render = function(c) {
 
   c.globalCompositeOperation = 'lighter';
 
-  const x = this.pos.x;
-  const y = this.pos.y;
+  const { x } = this.pos;
+  const { y } = this.pos;
   const r = this.size / 2;
 
   const gradient = c.createRadialGradient(x, y, 0.1, x, y, r);
@@ -92,13 +92,13 @@ Particle.prototype.render = function(c) {
   c.restore();
 };
 
-Particle.prototype.exists = function() {
+Particle.prototype.exists = function () {
   return this.alpha >= 0.1 && this.size >= 1;
 };
 
 function Rocket(x) {
   Particle.apply(this, [{
-    x: x,
+    x,
     y: SCREEN_HEIGHT,
   }]);
 
@@ -108,7 +108,7 @@ function Rocket(x) {
 Rocket.prototype = new Particle();
 Rocket.prototype.constructor = Rocket;
 
-Rocket.prototype.explode = function() {
+Rocket.prototype.explode = function () {
   const count = Math.random() * 10 + 80;
 
   for (let i = 0; i < count; i++) {
@@ -134,7 +134,7 @@ Rocket.prototype.explode = function() {
   }
 };
 
-Rocket.prototype.render = function(c) {
+Rocket.prototype.render = function (c) {
   if (!this.exists()) {
     return;
   }
@@ -143,8 +143,7 @@ Rocket.prototype.render = function(c) {
 
   c.globalCompositeOperation = 'lighter';
 
-  const x = this.pos.x;
-  const y = this.pos.y;
+  const { x, y } = this.pos;
   const r = this.size / 2;
 
   const gradient = c.createRadialGradient(x, y, 0.1, x, y, r);
@@ -222,7 +221,7 @@ export default {
       }
 
       // clear canvas
-      context.fillStyle = "rgba(0, 0, 0, 0.05)";
+      context.fillStyle = 'rgba(0, 0, 0, 0.05)';
       context.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
       const existingRockets = [];
@@ -277,6 +276,10 @@ export default {
       }
     }
   },
+  beforeDestroy() {
+    this.cleanLoops();
+    this.clearCanvas();
+  },
   methods: {
     cleanLoops() {
       clearInterval(launchInterval);
@@ -288,11 +291,7 @@ export default {
       context.clearRect(0, 0, canvas.width, canvas.height);
     },
   },
-  beforeDestroy() {
-    this.cleanLoops();
-    this.clearCanvas();
-  },
-}
+};
 </script>
 
 <style lang="scss">

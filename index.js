@@ -1,4 +1,5 @@
 const express = require('express');
+
 const app = express();
 const http = require('http').Server(app);
 const path = require('path');
@@ -33,14 +34,14 @@ app.post('/create-room', (req, res) => {
   // 2. Set room-name
   const { roomName } = req.body;
   const roomId = uuidv4();
-  let room = {
+  const room = {
     roomId,
     roomName,
   };
   redisLib.createRoom(room).then(() => {
     res.send({ status: 200, roomData: room });
-  }).catch((err) => {
-    res.status(500).send({ message: `Error creating room: ${err}`});
+  }).catch(err => {
+    res.status(500).send({ message: `Error creating room: ${err}` });
   });
 });
 
@@ -48,38 +49,37 @@ app.post('/join-room', (req, res) => {
   // 1. Join room
   // 2. Add current user with vote none as key value pair on the hash
   const { username, roomId } = req.body;
-  let room = {
+  const room = {
     roomId,
     username,
     vote: '-',
   };
-  redisLib.joinRoom(room).then((roomData) => {
-
+  redisLib.joinRoom(room).then(roomData => {
     res.send({ status: 200, roomData });
-  }).catch((err) => {
-    res.status(500).send({ message: `Error joining room: ${err}`});
+  }).catch(err => {
+    res.status(500).send({ message: `Error joining room: ${err}` });
   });
 });
 
 app.get('/room-data/:roomId', (req, res) => {
-  const roomId = req.params.roomId;
+  const { roomId } = req.params;
   redisLib.getRoomData({ roomId }).then(roomData => {
     res.send(roomData);
-  }).catch((err) => {
-    res.status(500).send({ message: `Error getting room data: ${err}`});
+  }).catch(err => {
+    res.status(500).send({ message: `Error getting room data: ${err}` });
   });
 });
 
 app.post('/update-room-name', (req, res) => {
   const { roomId, roomName } = req.body;
-  let room = {
+  const room = {
     roomId,
     roomName,
   };
   redisLib.updateRoomName(room).then(() => {
-    res.send({ status: 200, message: 'Room name updated'});
-  }).catch((err) => {
-    res.status(500).send({ message: `Room update error: ${err}`});
+    res.send({ status: 200, message: 'Room name updated' });
+  }).catch(err => {
+    res.status(500).send({ message: `Room update error: ${err}` });
   });
 });
 
@@ -87,12 +87,12 @@ app.post('/cast-vote', (req, res) => {
   const { roomId, username, value } = req.body;
   if (roomId && username && value) {
     redisLib.addVoteToRoom({ roomId, username, vote: value }).then(() => {
-      res.send({ status: 200, message: 'Vote cast'});
-    }).catch((err) => {
-      res.status(500).send({ message: `Room vote error: ${err}`});
+      res.send({ status: 200, message: 'Vote cast' });
+    }).catch(err => {
+      res.status(500).send({ message: `Room vote error: ${err}` });
     });
   } else {
-    res.status(500).send({ message: `Required data not present`});
+    res.status(500).send({ message: 'Required data not present' });
   }
 });
 
@@ -100,12 +100,12 @@ app.post('/set-vote-visibility', (req, res) => {
   const { roomId, showVotes } = req.body;
   if (roomId && typeof utils.toBoolean(showVotes) === 'boolean') {
     redisLib.addVoteToRoom({ roomId, username: 'show-votes', vote: showVotes }).then(() => {
-      res.send({ status: 200, message: 'Vote visibility set'});
-    }).catch((err) => {
-      res.status(500).send({ message: `Room vote visibility error: ${err}`});
+      res.send({ status: 200, message: 'Vote visibility set' });
+    }).catch(err => {
+      res.status(500).send({ message: `Room vote visibility error: ${err}` });
     });
   } else {
-    res.status(400).send({ message: `Required data not present`});
+    res.status(400).send({ message: 'Required data not present' });
   }
 });
 
@@ -113,12 +113,12 @@ app.post('/set-lock', (req, res) => {
   const { roomId, isLocked } = req.body;
   if (roomId && typeof utils.toBoolean(isLocked) === 'boolean') {
     redisLib.addVoteToRoom({ roomId, username: 'is-locked', vote: isLocked }).then(() => {
-      res.send({ status: 200, message: 'Vote lock set'});
-    }).catch((err) => {
-      res.status(500).send({ message: `Room lock error: ${err}`});
+      res.send({ status: 200, message: 'Vote lock set' });
+    }).catch(err => {
+      res.status(500).send({ message: `Room lock error: ${err}` });
     });
   } else {
-    res.status(400).send({ message: `Required data not present`});
+    res.status(400).send({ message: 'Required data not present' });
   }
 });
 
@@ -134,7 +134,7 @@ app.post('/clear-votes', (req, res) => {
 });
 
 redisLib.connectToClient().then(res => {
-  io.on('connection', (socket) => {
+  io.on('connection', socket => {
     consoleMsg('a user connected');
     const connectionInfo = {
       socketId: socket.id,
@@ -145,15 +145,15 @@ redisLib.connectToClient().then(res => {
     socket.on('disconnect', () => {
       const { roomId, username } = connectionInfo;
       if (roomId) {
-        redisLib.leaveRoom({ roomId, username }).then((roomData) => {
+        redisLib.leaveRoom({ roomId, username }).then(roomData => {
           io.emit(`room:${roomId}:changed`, roomData);
-        }).catch((err) => {
+        }).catch(err => {
           consoleMsg(`Error leaving room: ${err}`);
-        })
+        });
       }
     });
 
-    socket.on('room:joined', (userData) => {
+    socket.on('room:joined', userData => {
       // Won't this set it for everybody?
       connectionInfo.username = userData.username;
       connectionInfo.roomId = userData.roomId;
@@ -164,16 +164,16 @@ redisLib.connectToClient().then(res => {
       io.emit(`room:${roomId}:showVotes change`, { votesAreShown });
     });
 
-    socket.on('room:update', (msg) => {
+    socket.on('room:update', msg => {
       const { roomId } = msg;
       redisLib.getRoomData({ roomId }).then(roomData => {
         io.emit(`room:${roomId}:changed`, roomData);
-      }).catch((err) => {
+      }).catch(err => {
         consoleMsg(`Room update error: ${err}`);
       });
     });
 
-    socket.on('timerEvent', (msg) => {
+    socket.on('timerEvent', msg => {
       const { roomId, eventName } = msg;
       io.emit(`room:${roomId}:timerEvent`, eventName);
     });
