@@ -9,7 +9,7 @@
       <span
         v-for="(emoji, idx) in emojiCount"
         :key="idx"
-        v-bind:style="getRandomTurkeyPosition()"
+        :style="getRandomTurkeyPosition()"
         class="turkey"
       >
         🦃
@@ -32,7 +32,7 @@ export default {
     emojiCount: () => (Math.floor(Math.random() * 1000) + 100),
   },
   mounted() {
-    const RUN_SPEED = 1000;
+    const RUN_SPEED = 4000;
 
     EventBus.$on('turkey-run:start', () => {
       console.log('turkey run starting'); // eslint-disable-line
@@ -65,12 +65,13 @@ export default {
 
     .turkey {
       position: relative;
+      font-size: 50px;
     }
   }
 
   .slide-leave-active,
   .slide-enter-active {
-    transition: 3s;
+    transition: 4s linear;
   }
   .slide-enter {
     transform: translate(100%, 0);
