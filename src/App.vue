@@ -2,6 +2,7 @@
   <div id="app" :class="[getUiTheme(), { pyro: asplode }]">
     <autumn-leaves></autumn-leaves>
     <fireworks></fireworks>
+    <turkey-run />
     <div class="before"></div>
     <header>
       <router-link to="/"><img class="logo" src="./assets/crumb-master.png" /></router-link>
@@ -74,6 +75,8 @@ export default {
         return { name: 'fireworks' };
       } else if (month === 9) { // October
         return { name: 'autumn-leaves', duration: 5000 };
+      } else if (month === 10) {
+        return { name: 'turkey-run' };
       }
       return { name: 'pyro' };
     },
