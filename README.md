@@ -1,11 +1,6 @@
 # crumb-master
 
-agile planning poker http://www.crumb-master.com/
+agile planning poker crumb-master.herokuapp.com
 
-## Features we might want
-
-- Customized voting values
-- Customized voting cards
-- Know when someone leaves room
-- Chat within voting window
-- Validate / sanitize api calls
+An app to assist with sprint planning.
+Create a voting room and players can join and cast their votes.
