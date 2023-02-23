@@ -187,6 +187,8 @@ redisLib.connectToClient().then(res => {
       }
     });
   });
+}).catch(err => {
+  consoleMsg(err);
 });
 
 http.listen(PORT, () => {
