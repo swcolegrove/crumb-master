@@ -9,7 +9,10 @@
     <tbody>
       <tr v-for="vote in votes" :key="vote.playerName">
         <td>{{ vote.playerName }}</td>
-        <td class="vote-value" :class="{ 'hide-vote': !showVotes }">
+        <td
+          class="vote-value"
+          :class="{ 'hide-vote': !showVotes }"
+        >
           <transition name="flash" mode="out-in">
             <div :key="vote.value">{{ showVotes ? vote.value || '-' : (vote.value === '-') ? '-' : '✓' }}</div>
           </transition>
@@ -26,7 +29,7 @@ export default {
     showVotes: Boolean,
     votes: Array,
   },
-}
+};
 </script>
 
 <style lang="scss" scoped>
